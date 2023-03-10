@@ -1,6 +1,6 @@
 # Blockchain Building Blocks (B3)
 
-Blockchain Building Blocks (B3) are extracted from [Polkadot](https://github.com/paritytech/polkadot), [Substract] (https://github.com/paritytech/substrate) and [Cumulus](https://github.com/paritytech/cumulus). It provides templates to build solo chain, relay chain or para chain.  
+Blockchain Building Blocks (B3) are extracted from [Polkadot](https://github.com/paritytech/polkadot), [Substract](https://github.com/paritytech/substrate) and [Cumulus](https://github.com/paritytech/cumulus). It provides templates to build solo chain, relay chain or para chain.  
 
 ## Getting Started
 
