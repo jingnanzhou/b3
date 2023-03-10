@@ -1,8 +1,6 @@
 # Blockchain Building Blocks (B3)
 
-[![Try on playground](https://img.shields.io/badge/Playground-Node_Template-brightgreen?logo=Parity%20Substrate)](https://docs.substrate.io/playground/) [![Matrix](https://img.shields.io/matrix/substrate-technical:matrix.org)](https://matrix.to/#/#substrate-technical:matrix.org)
-
-A fresh FRAME-based [Substrate](https://www.substrate.io/) node, ready for hacking :rocket:
+Blockchain Building Blocks (B3) are extracted from [Polkadot](https://github.com/paritytech/polkadot), {Substract (https://github.com/paritytech/substrate) and [Cumulus](https://github.com/paritytech/cumulus). It provides templates to build solo chain, relay chain or para chain.  
 
 ## Getting Started
 
