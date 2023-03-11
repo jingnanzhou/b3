@@ -61,6 +61,9 @@ members = [
 
 
     "pallets/template",
+    "pallets/base/timestamp",
+    "pallets/base/indices",
+
 
 ]
 [profile.release]
