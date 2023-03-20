@@ -1,9 +1,13 @@
 # Pallet Repository
 
-## Basic Platform Pallets
+## Primitive Platform Pallets
 
-### pallet-timestamp
-### Indices
+    ### pallet-timestamp
+    ### Indices
+
+    ### pallet-authorship
+    ### pallet-session
+
 
 ## Finance Pallets
 
@@ -13,9 +17,7 @@
 
 ## Consensus Pallets
 
-### pallet-authorship
 
-### pallet-session
 
 ## Governance Pallets
 

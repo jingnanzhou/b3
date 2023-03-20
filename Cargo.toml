@@ -61,9 +61,12 @@ members = [
 
 
     "pallets/template",
-    "pallets/base/timestamp",
-    "pallets/base/indices",
+    "pallets/primitives/timestamp",
+    "pallets/primitives/indices",
+    "pallets/primitives/session",
+    "pallets/primitives/session/benchmarking",
 
+    "pallets/primitives/authorship",
 
 ]
 [profile.release]
