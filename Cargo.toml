@@ -67,6 +67,7 @@ members = [
     "pallets/primitives/session/benchmarking",
 
     "pallets/primitives/authorship",
+    "pallets/primitives/offchain-worker",
 
 ]
 [profile.release]
