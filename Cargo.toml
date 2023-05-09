@@ -23,41 +23,41 @@ path = "src/main.rs"
 [workspace]
 members = [
 
-    "templates/relay-mvp/node/cli",
-    "templates/relay-mvp/node/client",
-    "templates/relay-mvp/node/service",
+    "b3-frameworks/relay-mvp/node/cli",
+    "b3-frameworks/relay-mvp/node/client",
+    "b3-frameworks/relay-mvp/node/service",
 
-    "templates/relay-mvp/chains/westend/runtime",
-    "templates/relay-mvp/chains/westend/chain-spec",
-    "templates/relay-mvp/chains/rococo/runtime",
-    "templates/relay-mvp/chains/rococo/chain-spec",
-    "templates/relay-mvp/chain-selection",
-
-
-    "templates/para-mvp/node",
-    "templates/para-mvp/chains/sample/runtime",
-    "templates/para-mvp/chains/sample/chain-spec",
-    "templates/para-mvp/chain-selection",
+    "b3-frameworks/relay-mvp/chains/westend/runtime",
+    "b3-frameworks/relay-mvp/chains/westend/chain-spec",
+    "b3-frameworks/relay-mvp/chains/rococo/runtime",
+    "b3-frameworks/relay-mvp/chains/rococo/chain-spec",
+    "b3-frameworks/relay-mvp/chain-selection",
 
 
-
-
-    "templates/solo-poc/node",
-    "templates/solo-poc/chains/sample/runtime",
-    "templates/solo-poc/chains/sample/chain-spec",
-    "templates/solo-poc/chain-selection",
+    "b3-frameworks/para-mvp/node",
+    "b3-frameworks/para-mvp/chains/sample/runtime",
+    "b3-frameworks/para-mvp/chains/sample/chain-spec",
+    "b3-frameworks/para-mvp/chain-selection",
 
 
 
-    "templates/solo-mvp/node/cli",
-    "templates/solo-mvp/node/executor",
-    "templates/solo-mvp/node/inspect",
-    "templates/solo-mvp/node/primitives",
-    "templates/solo-mvp/node/rpc",
-    "templates/solo-mvp/node/testing",
-    "templates/solo-mvp/chains/sample/runtime",
-    "templates/solo-mvp/chains/sample/chain-spec",
-    "templates/solo-mvp/chain-selection",
+
+    "b3-frameworks/solo-poc/node",
+    "b3-frameworks/solo-poc/chains/sample/runtime",
+    "b3-frameworks/solo-poc/chains/sample/chain-spec",
+    "b3-frameworks/solo-poc/chain-selection",
+
+
+
+    "b3-frameworks/solo-mvp/node/cli",
+    "b3-frameworks/solo-mvp/node/executor",
+    "b3-frameworks/solo-mvp/node/inspect",
+    "b3-frameworks/solo-mvp/node/primitives",
+    "b3-frameworks/solo-mvp/node/rpc",
+    "b3-frameworks/solo-mvp/node/testing",
+    "b3-frameworks/solo-mvp/chains/sample/runtime",
+    "b3-frameworks/solo-mvp/chains/sample/chain-spec",
+    "b3-frameworks/solo-mvp/chain-selection",
 
 
     "pallets/template",

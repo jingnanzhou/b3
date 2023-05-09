@@ -1,40 +1,73 @@
 # Blockchain Building Blocks (B3)
 
-Blockchain Building Blocks (B3) are extracted from [Polkadot](https://github.com/paritytech/polkadot), [Substract](https://github.com/paritytech/substrate) and [Cumulus](https://github.com/paritytech/cumulus). It provides templates to build solo chain, relay chain or para chain.  
+B3 is a set of tools and libraries that make it easy to build blockchain networks. B3 is based on  [Polkadot](https://github.com/paritytech/polkadot), [Substract](https://github.com/paritytech/substrate), [Cumulus](https://github.com/paritytech/cumulus), and it is developed by the [Polkadot open source community](https://polkadot.network/ecosystem/community/).
 
-## Getting Started
+B3 provides a number of features that make it easy to build blockchain networks, including:
 
-Follow the steps below to get started with the Node Template, or get it up and running right from
-your browser in just a few clicks using
-the [Substrate Playground](https://docs.substrate.io/playground/) :hammer_and_wrench:
+* A modular design that makes it easy to add new features and functionality
+* A well-documented API that makes it easy to get started
+* A large community of developers who are willing to help
 
-### Using Nix
+B3 is a great choice for developers who want to build blockchain networks quickly and easily. It is a powerful and flexible platform that can be used to build a wide variety of blockchain applications.
 
-Install [nix](https://nixos.org/) and optionally [direnv](https://github.com/direnv/direnv) and
-[lorri](https://github.com/nix-community/lorri) for a fully plug and play experience for setting up
-the development environment. To get all the correct dependencies activate direnv `direnv allow` and
-lorri `lorri shell`.
+## Features
+
+* Modular design
+* Well-documented API
+* Large community of developers
+
+## Benefits
+
+* Easy to build blockchain networks
+* Powerful and flexible platform
+* Wide variety of blockchain applications
+
+## Get started
+
+Follow the steps below to get started with B3
 
 ### Rust Setup
 
 First, complete the [basic Rust setup instructions](./docs/rust-setup.md).
 
-### Run
+### Clone b3 Source Code
 
-Use Rust's native `cargo` command to build and launch the template node:
+clone b3 source code from github 
 
 ```sh
-cargo run --release -- --dev
+git clone https://github.com/iservicebus/b3.git 
+cd ./b3
 ```
 
-### Build
-
-The `cargo run` command will perform an initial build. Use the following command to build the node
-without launching it:
+### Run Solo Chain Proof of Concept (POC)
 
 ```sh
+cd ./b3-frameworks/solo-poc/node
 cargo build --release
 ```
+
+### Run Solo Chain Minimum Viable Product (MVP)
+
+```sh
+cd ./b3-frameworks/solo-mvp/node
+cargo build --release
+```
+
+### Run RelayChain Minimum Viable Product (MVP)
+
+```sh
+cd ./b3-frameworks/relay-mvp/node
+cargo build --release
+```
+
+### Run ParaChain Minimum Viable Product (MVP)
+
+```sh
+cd ./b3-frameworks/para-mvp/node
+cargo build --release
+```
+
+
 
 ### Embedded Docs
 
