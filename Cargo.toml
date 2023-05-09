@@ -61,6 +61,10 @@ members = [
 
 
     "pallets/template",
+
+    "pallets/finance/trade-finance",
+
+
     "pallets/primitives/timestamp",
     "pallets/primitives/indices",
     "pallets/primitives/session",
