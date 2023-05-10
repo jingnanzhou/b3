@@ -1,6 +1,6 @@
 [package]
-name = "trade-finance"
-description = "decentralized trade finance"
+name = "pallet-detrade"
+description = "pallet for decentralized trade finance"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

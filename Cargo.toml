@@ -23,46 +23,49 @@ path = "src/main.rs"
 [workspace]
 members = [
 
-    "b3-frameworks/relay-mvp/node/cli",
-    "b3-frameworks/relay-mvp/node/client",
-    "b3-frameworks/relay-mvp/node/service",
+    "b3-framework/relay-mvp/node/cli",
+    "b3-framework/relay-mvp/node/client",
+    "b3-framework/relay-mvp/node/service",
 
-    "b3-frameworks/relay-mvp/chains/westend/runtime",
-    "b3-frameworks/relay-mvp/chains/westend/chain-spec",
-    "b3-frameworks/relay-mvp/chains/rococo/runtime",
-    "b3-frameworks/relay-mvp/chains/rococo/chain-spec",
-    "b3-frameworks/relay-mvp/chain-selection",
-
-
-    "b3-frameworks/para-mvp/node",
-    "b3-frameworks/para-mvp/chains/sample/runtime",
-    "b3-frameworks/para-mvp/chains/sample/chain-spec",
-    "b3-frameworks/para-mvp/chain-selection",
+    "b3-framework/relay-mvp/chains/westend/runtime",
+    "b3-framework/relay-mvp/chains/westend/chain-spec",
+    "b3-framework/relay-mvp/chains/rococo/runtime",
+    "b3-framework/relay-mvp/chains/rococo/chain-spec",
+    "b3-framework/relay-mvp/chain-selection",
 
 
-
-
-    "b3-frameworks/solo-poc/node",
-    "b3-frameworks/solo-poc/chains/sample/runtime",
-    "b3-frameworks/solo-poc/chains/sample/chain-spec",
-    "b3-frameworks/solo-poc/chain-selection",
+    "b3-framework/para-mvp/node",
+    "b3-framework/para-mvp/chains/sample/runtime",
+    "b3-framework/para-mvp/chains/sample/chain-spec",
+    "b3-framework/para-mvp/chain-selection",
 
 
 
-    "b3-frameworks/solo-mvp/node/cli",
-    "b3-frameworks/solo-mvp/node/executor",
-    "b3-frameworks/solo-mvp/node/inspect",
-    "b3-frameworks/solo-mvp/node/primitives",
-    "b3-frameworks/solo-mvp/node/rpc",
-    "b3-frameworks/solo-mvp/node/testing",
-    "b3-frameworks/solo-mvp/chains/sample/runtime",
-    "b3-frameworks/solo-mvp/chains/sample/chain-spec",
-    "b3-frameworks/solo-mvp/chain-selection",
+
+    "b3-framework/solo-poc/node",
+    "b3-framework/solo-poc/net-defs/sample/runtime",
+    "b3-framework/solo-poc/net-defs/sample/chain-spec",
+    "b3-framework/solo-poc/net-defs/de-wcf/runtime",
+    "b3-framework/solo-poc/net-defs/de-wcf/chain-spec",
+
+    "b3-framework/solo-poc/net-selection",
+
+
+
+    "b3-framework/solo-mvp/node/cli",
+    "b3-framework/solo-mvp/node/executor",
+    "b3-framework/solo-mvp/node/inspect",
+    "b3-framework/solo-mvp/node/primitives",
+    "b3-framework/solo-mvp/node/rpc",
+    "b3-framework/solo-mvp/node/testing",
+    "b3-framework/solo-mvp/chains/sample/runtime",
+    "b3-framework/solo-mvp/chains/sample/chain-spec",
+    "b3-framework/solo-mvp/chain-selection",
 
 
     "pallets/template",
 
-    "pallets/finance/trade-finance",
+    "pallets/finance/detrade",
 
 
     "pallets/primitives/timestamp",

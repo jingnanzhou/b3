@@ -1,0 +1,34 @@
+[package]
+name = "solo-poc-net-selection"
+rust-version = "1.60"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+# solo poc sample chain
+solo-poc-sample-runtime = { path = "../net-defs/sample/runtime" , optional = true}
+solo-poc-sample-chain-spec = { path = "../net-defs/sample/chain-spec" , optional = true}
+
+# solo poc de-wcf chain
+solo-poc-de-wcf-runtime = { path = "../net-defs/de-wcf/runtime" , optional = true}
+solo-poc-de-wcf-chain-spec = { path = "../net-defs/de-wcf/chain-spec" , optional = true}
+
+
+[features]
+default = ["de-wcf"]
+sample = ["solo-poc-sample-runtime", "solo-poc-sample-chain-spec" ]
+
+de-wcf = ["solo-poc-de-wcf-runtime", "solo-poc-de-wcf-chain-spec" ]
+
+#runtime-metrics = ["solo-poc-de-wcf-runtime/runtime-metrics"]
+try-runtime = ["solo-poc-de-wcf-runtime/try-runtime"]
+runtime-benchmarks = ["solo-poc-de-wcf-runtime/runtime-benchmarks"]
+fast-runtime = []
+
+
+#runtime-metrics = ["solo-poc-sample-runtime/runtime-metrics"]
+#try-runtime = ["solo-poc-sample-runtime/try-runtime"]
+#runtime-benchmarks = ["solo-poc-sample-runtime/runtime-benchmarks"]
+#fast-runtime = []
+

@@ -1,6 +1,7 @@
 # Blockchain Building Blocks (B3)
 
-B3 is a set of tools and libraries that make it easy to build blockchain networks. B3 is based on  [Polkadot](https://github.com/paritytech/polkadot), [Substract](https://github.com/paritytech/substrate), [Cumulus](https://github.com/paritytech/cumulus), and it is developed by the [Polkadot open source community](https://polkadot.network/ecosystem/community/).
+Blockchain Building Blocks (B3) is a set of tools and libraries that abstract the complexity of building blockchain networks. It is based on  [Polkadot](https://github.com/paritytech/polkadot), [Substract](https://github.com/paritytech/substrate), [Cumulus](https://github.com/paritytech/cumulus), and pallets developed by the [Polkadot open source community](https://polkadot.network/ecosystem/community/).
+
 
 B3 provides a number of features that make it easy to build blockchain networks, including:
 
