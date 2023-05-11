@@ -22,7 +22,7 @@
 //! can pregenerate seed database and `clone` it for every iteration of your benchmarks
 //! or tests to get consistent, smooth benchmark experience!
 
-use solo_mvp_chain_selection::solo_mvp_runtime;
+use solo_mvp_net_selection::solo_mvp_runtime;
 
 use solo_mvp_runtime as mvp_runtime;
 use std::{

@@ -1,5 +1,5 @@
 [package]
-name = "para-mvp-chain-selection"
+name = "para-mvp-net-selection"
 rust-version = "1.60"
 version.workspace = true
 authors.workspace = true
@@ -7,8 +7,8 @@ edition.workspace = true
 
 [dependencies]
 # para sample chain
-para-sample-runtime = { path = "../chains/sample/runtime" , optional = true}
-para-sample-chain-spec = { path = "../chains/sample/chain-spec" , optional = true}
+para-sample-runtime = { path = "../net-defs/sample/runtime" , optional = true}
+para-sample-chain-spec = { path = "../net-defs/sample/chain-spec" , optional = true}
 
 
 [features]

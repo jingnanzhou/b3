@@ -30,7 +30,7 @@ pub use self::overseer::{OverseerGen, OverseerGenArgs, RealOverseerGen};
 
 #[cfg(test)]
 mod tests;
-pub use relay_mvp_chain_selection::relay_mvp_runtime;
+pub use relay_mvp_net_selection::relay_mvp_runtime;
 
 #[cfg(feature = "full-node")]
 use {
@@ -224,7 +224,7 @@ pub enum Error {
 	DatabasePathRequired,
 
 	#[cfg(feature = "full-node")]
-	#[error("Expected at chain-selection feature")]
+	#[error("Expected at net-selection feature")]
 	NoRuntime,
 }
 
@@ -1303,7 +1303,7 @@ pub fn build_full(
 	hwbench: Option<sc_sysinfo::HwBench>,
 ) -> Result<NewFull<Arc<FullClient<relay_mvp_runtime::RuntimeApi, RelayExecutorDispatch>>>, Error> {
 
-	#[cfg(feature = "chain-selection")]
+	#[cfg(feature = "net-selection")]
 	return new_full::<relay_mvp_runtime::RuntimeApi, RelayExecutorDispatch, _>(
 			config,
 			is_collator,
@@ -1320,7 +1320,7 @@ pub fn build_full(
 		);
 //		.map(|full| full.with_client(Client::Westend));
 
-	#[cfg(not(feature = "chain-selection"))]
+	#[cfg(not(feature = "net-selection"))]
 	Err(Error::NoRuntime)
 }
 

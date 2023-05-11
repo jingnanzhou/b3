@@ -40,7 +40,7 @@ sc-service = { git = "https://github.com/paritytech/substrate", default-features
 beefy-primitives = { git = "https://github.com/paritytech/substrate", package = "sp-beefy" , branch = "polkadot-v0.9.37" }
 
 # mvp Runtime
-relay-mvp-chain-selection = { path = "../../chain-selection", optional = true }
+relay-mvp-net-selection = { path = "../../net-selection", optional = true }
 
 polkadot-core-primitives = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.37" }
 polkadot-primitives = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.37"}
@@ -48,10 +48,10 @@ polkadot-node-core-parachains-inherent = { git = "https://github.com/paritytech/
 polkadot-runtime-common = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.37"}
 
 [features]
-default = ["chain-selection"]
+default = ["net-selection"]
 
-chain-selection = ["relay-mvp-chain-selection"]
+net-selection = ["relay-mvp-net-selection"]
 
 runtime-metrics = [
-    "relay-mvp-chain-selection/runtime-metrics",
+    "relay-mvp-net-selection/runtime-metrics",
 ]

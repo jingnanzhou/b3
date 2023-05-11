@@ -1,5 +1,5 @@
 [package]
-name = "solo-mvp-chain-selection"
+name = "solo-mvp-net-selection"
 rust-version = "1.60"
 version.workspace = true
 authors.workspace = true
@@ -7,8 +7,8 @@ edition.workspace = true
 
 [dependencies]
 # solo poc sample chain
-solo-mvp-sample-runtime = { path = "../chains/sample/runtime" , optional = true}
-solo-mvp-sample-chain-spec = { path = "../chains/sample/chain-spec" , optional = true}
+solo-mvp-sample-runtime = { path = "../net-defs/sample/runtime" , optional = true}
+solo-mvp-sample-chain-spec = { path = "../net-defs/sample/chain-spec" , optional = true}
 
 
 [features]

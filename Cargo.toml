@@ -27,17 +27,17 @@ members = [
     "b3-framework/relay-mvp/node/client",
     "b3-framework/relay-mvp/node/service",
 
-    "b3-framework/relay-mvp/chains/westend/runtime",
-    "b3-framework/relay-mvp/chains/westend/chain-spec",
-    "b3-framework/relay-mvp/chains/rococo/runtime",
-    "b3-framework/relay-mvp/chains/rococo/chain-spec",
-    "b3-framework/relay-mvp/chain-selection",
+    "b3-framework/relay-mvp/net-defs/westend/runtime",
+    "b3-framework/relay-mvp/net-defs/westend/chain-spec",
+    "b3-framework/relay-mvp/net-defs/rococo/runtime",
+    "b3-framework/relay-mvp/net-defs/rococo/chain-spec",
+    "b3-framework/relay-mvp/net-selection",
 
 
     "b3-framework/para-mvp/node",
-    "b3-framework/para-mvp/chains/sample/runtime",
-    "b3-framework/para-mvp/chains/sample/chain-spec",
-    "b3-framework/para-mvp/chain-selection",
+    "b3-framework/para-mvp/net-defs/sample/runtime",
+    "b3-framework/para-mvp/net-defs/sample/chain-spec",
+    "b3-framework/para-mvp/net-selection",
 
 
 
@@ -58,9 +58,9 @@ members = [
     "b3-framework/solo-mvp/node/primitives",
     "b3-framework/solo-mvp/node/rpc",
     "b3-framework/solo-mvp/node/testing",
-    "b3-framework/solo-mvp/chains/sample/runtime",
-    "b3-framework/solo-mvp/chains/sample/chain-spec",
-    "b3-framework/solo-mvp/chain-selection",
+    "b3-framework/solo-mvp/net-defs/sample/runtime",
+    "b3-framework/solo-mvp/net-defs/sample/chain-spec",
+    "b3-framework/solo-mvp/net-selection",
 
 
     "pallets/template",

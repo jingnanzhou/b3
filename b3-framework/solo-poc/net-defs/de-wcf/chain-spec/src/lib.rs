@@ -1,4 +1,4 @@
-use solo_poc_sample_runtime::{
+use solo_poc_de_wcf_runtime::{
 	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig,
 	SystemConfig, WASM_BINARY,
 };

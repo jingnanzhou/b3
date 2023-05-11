@@ -84,15 +84,15 @@ impl SubstrateCli for Cli {
 						.into(),
 				),
 
-			"prod" => Box::new(relay_mvp_chain_selection::prod_chain_spec()?),
-			"dev" => Box::new(relay_mvp_chain_selection::dev_chain_spec()?),
-			"local" => Box::new(relay_mvp_chain_selection::local_chain_spec()?),
-			"staging" => Box::new(relay_mvp_chain_selection::staging_chain_spec()?),
+			"prod" => Box::new(relay_mvp_net_selection::prod_chain_spec()?),
+			"dev" => Box::new(relay_mvp_net_selection::dev_chain_spec()?),
+			"local" => Box::new(relay_mvp_net_selection::local_chain_spec()?),
+			"staging" => Box::new(relay_mvp_net_selection::staging_chain_spec()?),
 
 			path => {
 				let path = std::path::PathBuf::from(path);
 
-					Box::new(relay_mvp_chain_selection::RelayChainSpec::from_json_file(path)?)
+					Box::new(relay_mvp_net_selection::RelayChainSpec::from_json_file(path)?)
 			},
 		};
 		Ok(spec)
@@ -101,7 +101,7 @@ impl SubstrateCli for Cli {
 
 
 	fn native_runtime_version(_spec: &Box<dyn service::ChainSpec>) -> &'static RuntimeVersion {
-			return &relay_mvp_chain_selection::relay_mvp_runtime::VERSION
+			return &relay_mvp_net_selection::relay_mvp_runtime::VERSION
 	}
 }
 
@@ -423,13 +423,13 @@ pub fn run() -> Result<()> {
 					set_default_ss58_version(chain_spec);
 
 
-					#[cfg(feature = "chain-selection")]
+					#[cfg(feature = "net-selection")]
 					return runner.sync_run(|config| {
-						cmd.run::<relay_mvp_chain_selection::relay_mvp_runtime::Block, service::RelayExecutorDispatch>(config)
+						cmd.run::<relay_mvp_net_selection::relay_mvp_runtime::Block, service::RelayExecutorDispatch>(config)
 							.map_err(|e| Error::SubstrateCli(e))
 					});
 
-					#[cfg(not(feature = "chain-selection"))]
+					#[cfg(not(feature = "net-selection"))]
 					#[allow(unreachable_code)]
 					Err(service::Error::NoRuntime.into())
 				},
@@ -466,7 +466,7 @@ pub fn run() -> Result<()> {
 
 			runner.async_run(|config| {
 					Ok((
-						cmd.run::<relay_mvp_chain_selection::relay_mvp_runtime::Block, service::RelayExecutorDispatch>(
+						cmd.run::<relay_mvp_net_selection::relay_mvp_runtime::Block, service::RelayExecutorDispatch>(
 							config,
 						)
 						.map_err(Error::SubstrateCli),

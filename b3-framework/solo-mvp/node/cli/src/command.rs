@@ -23,7 +23,7 @@ use crate::{
 	Cli, Subcommand,
 };
 use frame_benchmarking_cli::*;
-use solo_mvp_chain_selection::solo_mvp_runtime;
+use solo_mvp_net_selection::solo_mvp_runtime;
 
 use solo_mvp_runtime::{ExistentialDeposit, RuntimeApi};
 use solo_mvp_node_executor::ExecutorDispatch;
@@ -66,12 +66,12 @@ impl SubstrateCli for Cli {
 					"Please specify which chain you want to run, e.g. --dev or --chain=local"
 						.into(),
 				),
-			"dev" => Box::new(solo_mvp_chain_selection::dev_chain_spec()),
-			"local" => Box::new(solo_mvp_chain_selection::test_chain_spec()),
-			"fir" | "flaming-fir" => Box::new(solo_mvp_chain_selection::fir_chain_spec()?),
-			"staging" => Box::new(solo_mvp_chain_selection::staging_chain_spec()),
+			"dev" => Box::new(solo_mvp_net_selection::dev_chain_spec()),
+			"local" => Box::new(solo_mvp_net_selection::test_chain_spec()),
+			"fir" | "flaming-fir" => Box::new(solo_mvp_net_selection::fir_chain_spec()?),
+			"staging" => Box::new(solo_mvp_net_selection::staging_chain_spec()),
 			path =>
-				Box::new(solo_mvp_chain_selection::ChainSpec::from_json_file(std::path::PathBuf::from(path))?),
+				Box::new(solo_mvp_net_selection::ChainSpec::from_json_file(std::path::PathBuf::from(path))?),
 		};
 		Ok(spec)
 	}

@@ -5,7 +5,7 @@ use cumulus_client_cli::generate_genesis_block;
 use cumulus_primitives_core::ParaId;
 use frame_benchmarking_cli::{BenchmarkCmd, SUBSTRATE_REFERENCE_HARDWARE};
 use log::{info, warn};
-use para_mvp_chain_selection::para_mvp_runtime;
+use para_mvp_net_selection::para_mvp_runtime;
 use para_mvp_runtime::Block;
 use sc_cli::{
 	ChainSpec, CliConfiguration, DefaultConfigurationValues, ImportParams, KeystoreParams,
@@ -22,10 +22,10 @@ use crate::{
 
 fn load_spec(id: &str) -> std::result::Result<Box<dyn ChainSpec>, String> {
 	Ok(match id {
-		"dev" => Box::new(para_mvp_chain_selection::dev_chain_spec()),
-		"template-rococo" => Box::new(para_mvp_chain_selection::dev_chain_spec()),
-		"" | "local" => Box::new(para_mvp_chain_selection::test_chain_spec()),
-		path => Box::new(para_mvp_chain_selection::ChainSpec::from_json_file(std::path::PathBuf::from(path))?),
+		"dev" => Box::new(para_mvp_net_selection::dev_chain_spec()),
+		"template-rococo" => Box::new(para_mvp_net_selection::dev_chain_spec()),
+		"" | "local" => Box::new(para_mvp_net_selection::test_chain_spec()),
+		path => Box::new(para_mvp_net_selection::ChainSpec::from_json_file(std::path::PathBuf::from(path))?),
 	})
 }
 
@@ -265,7 +265,7 @@ pub fn run() -> Result<()> {
 					None
 				};
 
-				let para_id = para_mvp_chain_selection::Extensions::try_get(&*config.chain_spec)
+				let para_id = para_mvp_net_selection::Extensions::try_get(&*config.chain_spec)
 					.map(|e| e.para_id)
 					.ok_or_else(|| "Could not find parachain ID in chain-spec.")?;
 

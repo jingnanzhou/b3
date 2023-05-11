@@ -19,7 +19,7 @@
 //! Test accounts.
 
 use codec::Encode;
-use solo_mvp_chain_selection::solo_mvp_runtime;
+use solo_mvp_net_selection::solo_mvp_runtime;
 
 use solo_mvp_runtime::{CheckedExtrinsic, SessionKeys, SignedExtra, UncheckedExtrinsic};
 use solo_mvp_node_primitives::{AccountId, Balance, Index};

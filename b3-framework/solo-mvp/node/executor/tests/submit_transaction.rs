@@ -17,7 +17,7 @@
 
 use codec::Decode;
 use frame_system::offchain::{SendSignedTransaction, Signer, SubmitTransaction};
-use solo_mvp_chain_selection::solo_mvp_runtime;
+use solo_mvp_net_selection::solo_mvp_runtime;
 
 use solo_mvp_runtime::{Executive, Indices, Runtime, UncheckedExtrinsic};
 use sp_application_crypto::AppKey;

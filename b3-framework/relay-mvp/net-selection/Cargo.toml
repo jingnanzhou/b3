@@ -1,5 +1,5 @@
 [package]
-name = "relay-mvp-chain-selection"
+name = "relay-mvp-net-selection"
 rust-version = "1.60"
 version.workspace = true
 authors.workspace = true
@@ -7,14 +7,14 @@ edition.workspace = true
 
 [dependencies]
 # westend chain
-westend-chain-runtime = { path = "../chains/westend/runtime" , optional = true}
-westend-chain-spec = { path = "../chains/westend/chain-spec" , optional = true}
-westend-chain-runtime-constants = { path = "../chains/westend/runtime/constants", optional = true }
+westend-chain-runtime = { path = "../net-defs/westend/runtime" , optional = true}
+westend-chain-spec = { path = "../net-defs/westend/chain-spec" , optional = true}
+westend-chain-runtime-constants = { path = "../net-defs/westend/runtime/constants", optional = true }
 
 # rococo chain
-rococo-chain-runtime = { path = "../chains/rococo/runtime" , optional = true}
-rococo-chain-spec = { path = "../chains/rococo/chain-spec" , optional = true}
-rococo-chain-runtime-constants = { path = "../chains/rococo/runtime/constants", optional = true }
+rococo-chain-runtime = { path = "../net-defs/rococo/runtime" , optional = true}
+rococo-chain-spec = { path = "../net-defs/rococo/chain-spec" , optional = true}
+rococo-chain-runtime-constants = { path = "../net-defs/rococo/runtime/constants", optional = true }
 
 
 [features]
