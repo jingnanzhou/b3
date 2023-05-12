@@ -11705,6 +11705,7 @@ dependencies = [
  "frame-try-runtime",
  "pallet-aura",
  "pallet-balances",
+ "pallet-detrade",
  "pallet-grandpa",
  "pallet-randomness-collective-flip",
  "pallet-sudo",

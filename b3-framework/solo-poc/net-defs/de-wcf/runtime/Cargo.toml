@@ -57,6 +57,7 @@ pallet-transaction-payment-rpc-runtime-api = { version = "4.0.0-dev", default-fe
 
 # Local Dependencies
 pallet-template = { path = "../../../../../pallets/template", default-features = false }
+pallet-detrade = { path = "../../../../../pallets/finance/detrade", default-features = false }
 
 
 [build-dependencies]
