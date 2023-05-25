@@ -67,7 +67,7 @@ members = [
 
     "pallets/finance/detrade",
 
-
+    "pallets/primitives/contracts",
     "pallets/primitives/timestamp",
     "pallets/primitives/indices",
     "pallets/primitives/session",

@@ -7,24 +7,54 @@ use frame_support::{
 	dispatch::{DispatchResult},
 	pallet_prelude::MaxEncodedLen,
 	traits::{Get},
-	RuntimeDebug,
+	BoundedVec,
+	DefaultNoBound, EqNoBound, PartialEqNoBound,
+
+	pallet_prelude::{
+		RuntimeDebugNoBound,
+	},
 };
 
-
 mod tests;
-
 mod mock;
 
+
+
+/// A checked solution, ready to be enacted.
 #[derive(
-Clone,	Encode, Decode, Default, Eq, PartialEq, RuntimeDebug, scale_info::TypeInfo, MaxEncodedLen,
+	 MaxEncodedLen,
+	PartialEqNoBound,
+	EqNoBound,
+	Encode,
+	Decode,
+	RuntimeDebugNoBound,
+	DefaultNoBound,
+	scale_info::TypeInfo,
 )]
-pub struct LetterOfCredit {
-    id: u64,
-    trade_id: u64,
-    amount: u64,
-    beneficiary: u64,
-    issuing_bank: u64,
-    status: u64,
+#[scale_info(skip_type_params(T))]
+pub struct LetterOfCredit<T: Config> {
+	id: u64,
+	trade_id: u64,
+	amount: u64,
+	beneficiary: BoundedVec<u8, T::StringLimit>,
+	issuing_bank: BoundedVec<u8, T::StringLimit>,
+	status: u64,
+}
+
+impl<T: Config> Clone for LetterOfCredit<T> {
+    fn clone(&self) -> Self {
+   
+		LetterOfCredit {
+
+			trade_id: self.trade_id.clone(),
+
+			amount: self.amount.clone(),
+			issuing_bank: self.issuing_bank.clone(),
+			status: self.status.clone(),
+			id: self.id.clone(),
+			beneficiary: self.beneficiary.clone(),
+		}
+    }
 }
 
 
@@ -34,6 +64,10 @@ pub mod pallet {
 	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
 
+
+
+
+
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
 	pub struct Pallet<T>(_);
@@ -42,18 +76,24 @@ pub mod pallet {
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
+		/// The maximum length of data stored on-chain.
+		#[pallet::constant]
+		type StringLimit: Get<u32>;
+
 
 	}
 
 	#[pallet::storage]
 	#[pallet::getter(fn get_lc)]
 	//  declaring LetterOfCredit as storage item:
-	pub type LetterOfCreditStore<T> = StorageValue<_, LetterOfCredit>;
+	pub type LetterOfCreditStore<T: Config> = StorageValue<_, LetterOfCredit<T>>;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
+
+	
 	pub enum Event<T: Config> {
-		LetterOfCreditStored { lc: LetterOfCredit, who: T::AccountId },
+		LetterOfCreditStored { lc: LetterOfCredit<T>, who: T::AccountId },
 	}
 
 	#[pallet::error]
@@ -72,10 +112,10 @@ pub mod pallet {
 
 		#[pallet::call_index(0)]
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1).ref_time())]
-		pub fn send_lc(origin: OriginFor<T>, lc: LetterOfCredit) -> DispatchResult {
+		pub fn send_lc(origin: OriginFor<T>, lc: LetterOfCredit<T>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 
-			let lc_clone: LetterOfCredit = lc.clone();
+			let lc_clone = lc.clone();
 			// Update storage.
 			<LetterOfCreditStore<T>>::put(lc_clone);
 
@@ -84,6 +124,27 @@ pub mod pallet {
 			// Return a successful DispatchResultWithPostInfo
 			Ok(())
 		}
+/* 
+		#[pallet::call_index(0)]
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1).ref_time())]
+		pub fn get_lc(origin: OriginFor<T>) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+			 
+				let lc = <LetterOfCreditStore<T>>::get();
+
+
+			let lc_clone = lc.clone();
+			// Update storage.
+			<LetterOfCreditStore<T>>::put(lc_clone);
+
+			// Emit an event.
+			Self::deposit_event(Event::LetterOfCreditStored { lc, who });
+			// Return a successful DispatchResultWithPostInfo
+			Ok(())
+		}
+
+*/
+
 /* 
 		/// An example dispatchable that may throw a custom error.
 		#[pallet::call_index(1)]
