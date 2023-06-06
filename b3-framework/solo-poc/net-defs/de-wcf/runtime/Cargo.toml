@@ -52,6 +52,9 @@ pallet-timestamp = { version = "4.0.0-dev", default-features = false, git = "htt
 pallet-transaction-payment = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", "branch" = "polkadot-v0.9.37" }
 pallet-transaction-payment-rpc-runtime-api = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", "branch" = "polkadot-v0.9.37" }
 
+#dependence for pallet_contract
+pallet-assets = { git = "https://github.com/paritytech/substrate", package = "pallet-assets", default-features = false, branch = "polkadot-v0.9.37" }
+pallet-assets-chain-extension = { git = "https://github.com/727-Ventures/pallet-assets-chain-extension", default-features = false, features = ["substrate"], branch = "polkadot-v0.9.37"  }
 
 
 
@@ -59,8 +62,12 @@ pallet-transaction-payment-rpc-runtime-api = { version = "4.0.0-dev", default-fe
 pallet-template = { path = "../../../../../pallets/template", default-features = false }
 pallet-detrade = { path = "../../../../../pallets/finance/detrade", default-features = false }
 
-pallet-contracts = { path = "../../../../../pallets/primitives/contracts", default-features = false }
-pallet-contracts-primitives = { path = "../../../../../pallets/primitives/contracts/primitives",  default-features = false }
+#pallet-contracts = { path = "../../../../../pallets/primitives/contracts", default-features = false }
+#pallet-contracts-primitives = { path = "../../../../../pallets/primitives/contracts/primitives",  default-features = false }
+
+# Contracts specific packages
+pallet-contracts = { git = "https://github.com/paritytech/substrate", package = "pallet-contracts", default-features = false, branch = "polkadot-v0.9.37" }
+pallet-contracts-primitives = { git = "https://github.com/paritytech/substrate", package = "pallet-contracts-primitives", default-features = false, branch = "polkadot-v0.9.37" }
 
 
 [build-dependencies]
@@ -99,6 +106,11 @@ std = [
 	"sp-std/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
+	"pallet-contracts/std",
+	"pallet-contracts-primitives/std",
+	"pallet-assets/std",
+	"pallet-assets-chain-extension/substrate-std",
+
 ]
 runtime-benchmarks = [
 	"frame-benchmarking/runtime-benchmarks",

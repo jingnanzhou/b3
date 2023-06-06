@@ -5293,6 +5293,46 @@ dependencies = [
 ]
 
 [[package]]
+name = "obce"
+version = "0.1.0"
+source = "git+https://github.com/727-Ventures/obce?branch=polkadot-v0.9.37#d452f6eda1bc1ecb36e7e332d61529ad440d5a89"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "obce-macro",
+ "pallet-contracts 4.0.0-dev (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.37)",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "obce-codegen"
+version = "0.1.0"
+source = "git+https://github.com/727-Ventures/obce?branch=polkadot-v0.9.37#d452f6eda1bc1ecb36e7e332d61529ad440d5a89"
+dependencies = [
+ "blake2",
+ "itertools",
+ "proc-macro2",
+ "quote",
+ "syn",
+ "tuple",
+]
+
+[[package]]
+name = "obce-macro"
+version = "0.1.0"
+source = "git+https://github.com/727-Ventures/obce?branch=polkadot-v0.9.37#d452f6eda1bc1ecb36e7e332d61529ad440d5a89"
+dependencies = [
+ "obce-codegen",
+ "proc-macro2",
+ "syn",
+ "synstructure",
+]
+
+[[package]]
 name = "object"
 version = "0.29.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5533,6 +5573,17 @@ dependencies = [
  "sp-core",
  "sp-runtime",
  "sp-std",
+]
+
+[[package]]
+name = "pallet-assets-chain-extension"
+version = "0.1.1"
+source = "git+https://github.com/727-Ventures/pallet-assets-chain-extension?branch=polkadot-v0.9.37#f8ea374186df2a3fc139c8d585719e58d83df582"
+dependencies = [
+ "obce",
+ "pallet-assets",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]
@@ -6947,9 +6998,9 @@ dependencies = [
 
 [[package]]
 name = "parity-scale-codec"
-version = "3.3.0"
+version = "3.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3840933452adf7b3b9145e27086a5a3376c619dca1a21b1e5a5af0d54979bed"
+checksum = "5ddb756ca205bd108aee3c62c6d3c994e1df84a59b9d6d4a5ea42ee1fd5a9a28"
 dependencies = [
  "arrayvec 0.7.2",
  "bitvec",
@@ -11798,10 +11849,12 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
+ "pallet-assets",
+ "pallet-assets-chain-extension",
  "pallet-aura",
  "pallet-balances",
- "pallet-contracts 4.0.0-dev",
- "pallet-contracts-primitives 7.0.0",
+ "pallet-contracts 4.0.0-dev (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.37)",
+ "pallet-contracts-primitives 7.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.37)",
  "pallet-detrade",
  "pallet-grandpa",
  "pallet-randomness-collective-flip",
@@ -13711,6 +13764,16 @@ name = "tt-call"
 version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f4f195fd851901624eee5a58c4bb2b4f06399148fcd0ed336e6f1cb60a9881df"
+
+[[package]]
+name = "tuple"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39a40ba241047e1174c927dc5f61c141a166b938d61a2ff61838441368cc7d0e"
+dependencies = [
+ "num-traits",
+ "serde",
+]
 
 [[package]]
 name = "turn"
