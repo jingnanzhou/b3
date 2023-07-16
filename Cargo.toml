@@ -23,6 +23,15 @@ path = "src/main.rs"
 [workspace]
 members = [
 
+    "common/support",
+    "common/runtime",
+
+    "common/assets",
+
+    "common/runtime-api/did",
+    "common/runtime-api/public-credentials",
+    "common/runtime-api/staking",
+
     "b3-framework/relay-mvp/node/cli",
     "b3-framework/relay-mvp/node/client",
     "b3-framework/relay-mvp/node/service",
@@ -66,6 +75,17 @@ members = [
     "pallets/template",
 
     "pallets/finance/detrade",
+
+    "pallets/primitives/ctype",
+    "pallets/primitives/attestation",
+    "pallets/primitives/did",
+    "pallets/primitives/public-credentials",
+   "pallets/primitives/delegation",
+   "pallets/primitives/parachain-staking",
+
+    "pallets/primitives/pallet-web3-names",
+
+
 
     "pallets/primitives/contracts",
     "pallets/primitives/timestamp",

@@ -1,0 +1,26 @@
+[package]
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+
+name = "kilt-runtime-api-staking"
+description = "Runtime APIs for dealing with parachain staking."
+
+[dependencies]
+# External dependencies
+parity-scale-codec = {version = "3.1.5", default-features = false, features = ["derive"]}
+scale-info = {version = "2.1.1", default-features = false, features = ["derive"]}
+
+# Substrate dependencies
+sp-api = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
+sp-runtime = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
+
+
+[features]
+default = ["std"]
+std = [
+  "parity-scale-codec/std",
+  "sp-api/std",
+  "sp-runtime/std",
+  "scale-info/std",
+]
