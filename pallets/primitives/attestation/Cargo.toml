@@ -31,7 +31,7 @@ scale-info = {version = "2.1.1", default-features = false, features = ["derive"]
 
 # Internal dependencies
 kilt-support = {path = "../../../common/support/", default-features = false }
-ctype = {path = "../ctype/", default-features = false,  optional = true  }
+ctype = {path = "../ctype/", default-features = false  }
 
 # Substrate dependencies
 

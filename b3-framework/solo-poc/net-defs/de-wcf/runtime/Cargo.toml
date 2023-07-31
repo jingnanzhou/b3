@@ -12,6 +12,9 @@ edition.workspace = true
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
+
+# External dependencies
+log = "0.4.17"
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
 scale-info = { version = "2.1.1", default-features = false, features = ["derive"] }
 
@@ -70,15 +73,59 @@ pallet-contracts = { git = "https://github.com/paritytech/substrate", package = 
 pallet-contracts-primitives = { git = "https://github.com/paritytech/substrate", package = "pallet-contracts-primitives", default-features = false, branch = "polkadot-v0.9.37" }
 
 
+
+
+# did pallets 
+ attestation = {path = "../../../../../pallets/primitives/attestation", default-features = false}
+ ctype = {path = "../../../../../pallets/primitives/ctype", default-features = false}
+ delegation = {path = "../../../../../pallets/primitives/delegation", default-features = false}
+ did = {path = "../../../../../pallets/primitives/did", default-features = false}
+ pallet-did-lookup = {path = "../../../../../pallets/primitives/pallet-did-lookup", default-features = false}
+ pallet-web3-names = {path = "../../../../../pallets/primitives/pallet-web3-names", default-features = false}
+ public-credentials = {path = "../../../../../pallets/primitives/public-credentials", default-features = false}
+
+
+
+
+# did internal support 
+ kilt-support = {path = "../../../../../common/support", default-features = false}
+ runtime-common = {path = "../../../../../common/runtime", default-features = false}
+ kilt-runtime-api-did = {path = "../../../../../common/runtime-api/did", default-features = false}
+
+ kilt-runtime-api-public-credentials = {path = "../../../../../common/runtime-api/public-credentials", default-features = false}
+
+
+
 [build-dependencies]
 substrate-wasm-builder = { version = "5.0.0-dev", git = "https://github.com/paritytech/substrate.git", "branch" = "polkadot-v0.9.37" }
 
 [features]
 default = ["std"]
 std = [
+	
+ "frame-benchmarking?/std",
+ "log/std",
+
+  "attestation/std",
+  "ctype/std",
+  "delegation/std",
+  "did/std",
+  "kilt-runtime-api-did/std",
+  "kilt-runtime-api-public-credentials/std",
+  "kilt-support/std",
+  
+
+  "pallet-did-lookup/std",
+  "pallet-web3-names/std",
+  "public-credentials/std",
+  "runtime-common/std",
+
+
+
+
+
 	"frame-try-runtime?/std",
 	"frame-system-benchmarking?/std",
-	"frame-benchmarking?/std",
 	"codec/std",
 	"scale-info/std",
 	"frame-executive/std",
@@ -111,8 +158,22 @@ std = [
 	"pallet-assets/std",
 	"pallet-assets-chain-extension/substrate-std",
 
+
 ]
 runtime-benchmarks = [
+
+ # "attestation/runtime-benchmarks",
+ # "ctype/runtime-benchmarks",
+ # "delegation/runtime-benchmarks",
+ # "did/runtime-benchmarks",
+ # "runtime-common/runtime-benchmarks",
+ # "kilt-support/runtime-benchmarks",
+ # "pallet-did-lookup/runtime-benchmarks",
+ # "pallet-web3-names/runtime-benchmarks",
+ # "public-credentials/runtime-benchmarks",
+
+
+
 	"frame-benchmarking/runtime-benchmarks",
 	"frame-support/runtime-benchmarks",
 	"frame-system-benchmarking/runtime-benchmarks",
@@ -124,6 +185,19 @@ runtime-benchmarks = [
 	"sp-runtime/runtime-benchmarks",
 ]
 try-runtime = [
+
+ # "attestation/try-runtime",
+ # "delegation/try-runtime",
+ # "ctype/try-runtime",
+ # "did/try-runtime",
+ # "kilt-support/try-runtime",
+ # "pallet-did-lookup/try-runtime",
+ # "pallet-web3-names/try-runtime",
+ # "public-credentials/try-runtime",
+ # "runtime-common/try-runtime",
+
+
+
 	"frame-try-runtime/try-runtime",
 	"frame-executive/try-runtime",
 	"frame-system/try-runtime",

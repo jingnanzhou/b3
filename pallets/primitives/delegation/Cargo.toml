@@ -28,8 +28,8 @@ sp-keystore = {git = "https://github.com/paritytech/substrate", branch = "polkad
 [dependencies]
 # Internal dependencies
 
-attestation = {path = "../attestation/", default-features = false ,   optional = true }
-ctype = {path = "../ctype/", default-features = false,   optional = true }
+attestation = {path = "../attestation/", default-features = false }
+ctype = {path = "../ctype/", default-features = false }
 kilt-support = {path = "../../../common/support/", default-features = false }
 public-credentials = {path = "../public-credentials/", default-features = false }
 

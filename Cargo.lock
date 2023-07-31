@@ -2239,6 +2239,7 @@ dependencies = [
  "sp-keystore",
  "sp-runtime",
  "sp-std",
+ "substrate-wasm-builder",
 ]
 
 [[package]]
@@ -6121,6 +6122,28 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
+]
+
+[[package]]
+name = "pallet-did-lookup"
+version = "0.9.37"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hex",
+ "kilt-support",
+ "libsecp256k1",
+ "log",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "sha3",
+ "sp-core",
+ "sp-io",
+ "sp-keystore",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -12086,6 +12109,10 @@ dependencies = [
 name = "solo-poc-de-wcf-runtime"
 version = "0.9.37"
 dependencies = [
+ "attestation",
+ "ctype",
+ "delegation",
+ "did",
  "frame-benchmarking",
  "frame-executive",
  "frame-support",
@@ -12093,6 +12120,10 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
+ "kilt-runtime-api-did",
+ "kilt-runtime-api-public-credentials",
+ "kilt-support",
+ "log",
  "pallet-assets",
  "pallet-assets-chain-extension",
  "pallet-aura",
@@ -12100,6 +12131,7 @@ dependencies = [
  "pallet-contracts 4.0.0-dev (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.37)",
  "pallet-contracts-primitives 7.0.0 (git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.37)",
  "pallet-detrade",
+ "pallet-did-lookup",
  "pallet-grandpa",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
@@ -12107,7 +12139,10 @@ dependencies = [
  "pallet-timestamp 4.0.0-dev",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-web3-names",
  "parity-scale-codec",
+ "public-credentials",
+ "runtime-common",
  "scale-info",
  "sp-api",
  "sp-block-builder",

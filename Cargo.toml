@@ -1,3 +1,9 @@
+[profile.release]
+# Polkadot runtime requires unwinding.
+panic = "unwind"
+opt-level = 3
+
+
 [package]
 name = "pallet-repository"
 description = "blockchain building blocks based on Polkadot and the Substrate framework."
@@ -79,6 +85,8 @@ members = [
     "pallets/primitives/ctype",
     "pallets/primitives/attestation",
     "pallets/primitives/did",
+    "pallets/primitives/pallet-did-lookup",
+
     "pallets/primitives/public-credentials",
    "pallets/primitives/delegation",
    "pallets/primitives/parachain-staking",
@@ -98,8 +106,4 @@ members = [
     "pallets/primitives/offchain-worker",
 
 ]
-[profile.release]
-# Polkadot runtime requires unwinding.
-panic = "unwind"
-opt-level = 3
 

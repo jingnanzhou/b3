@@ -1,32 +1,43 @@
-
 [package]
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
-name = "public-credentials"
-description = "Enables adding and revoking public credentials."
+name = "pallet-did-lookup"
+description = "Lookup the DID for a blockchain account."
 
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
 
 [dev-dependencies]
-
-ctype = {path = "../ctype/", default-features = false, features = ["mock"] }
 kilt-support = {path = "../../../common/support/", default-features = false, features = ["mock", "try-runtime"] }
 
-# Substrate dependencies
 pallet-balances = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37", features = ["std"]}
-sp-io = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37", features = ["std"]}
 sp-keystore = {git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.37", features = ["std"]}
+sp-core = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37", features = ["std"]}
+sp-io = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37", features = ["std"]}
+
 
 
 [dependencies]
 
+
+
 # Internal dependencies
-ctype = {path = "../ctype/", default-features = false }
 kilt-support = {path = "../../../common/support/", default-features = false }
 
 # External dependencies
-parity-scale-codec = {version = "3.1.5", default-features = false, features = ["derive"]}
-scale-info = {version = "2.1.1", default-features = false, features = ["derive"]}
+
+
+# External dependencies
+codec = {package = "parity-scale-codec", version = "3.1.5", default-features = false, features = ["derive"]}
+scale-info = {version = "2.1.1", default-features = false}
+log = "0.4.17"
+hex = {version = "0.4.0", default-features = false}
+libsecp256k1 = {version = "0.7", default-features = false}
+
+sha3 = {version = "0.10.0", default-features = false}
+
+
 
 
 # Substrate dependencies
@@ -37,10 +48,12 @@ frame-system = {git = "https://github.com/paritytech/substrate", default-feature
 
 
 sp-core = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37", optional = true}
-sp-keystore = {git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.37", optional = true}
 sp-io = {git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.37", optional = true}
 sp-runtime = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
 sp-std = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
+
+
+
 
 
 
@@ -48,19 +61,22 @@ sp-std = {git = "https://github.com/paritytech/substrate", default-features = fa
 default = ["std"]
 runtime-benchmarks = [
   "frame-benchmarking",
+  "sp-io",
+  "kilt-support/runtime-benchmarks",
   "frame-support/runtime-benchmarks",
   "frame-system/runtime-benchmarks",
-  "kilt-support/runtime-benchmarks",
   "sp-runtime/runtime-benchmarks",
 ]
 std = [
-  "parity-scale-codec/std",
-  "scale-info/std",
-  "ctype/std",
-  "kilt-support/std",
+  "codec/std",
   "frame-benchmarking?/std",
   "frame-support/std",
   "frame-system/std",
+  "hex/std",
+  "log/std",
+  "libsecp256k1/std",
+  "scale-info/std",
+  "sha3/std",
   "sp-core/std",
   "sp-io/std",
   "sp-runtime/std",
@@ -69,5 +85,5 @@ std = [
 try-runtime = [
   "frame-support/try-runtime",
   "frame-system/try-runtime",
-  "kilt-support/try-runtime"
+  "kilt-support/try-runtime",
 ]

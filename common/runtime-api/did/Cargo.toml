@@ -16,7 +16,7 @@ scale-info = {version = "2.1.1", default-features = false, features = ["derive"]
 
 # Internal dependencies
 kilt-support = {path = "../../support/", default-features = false }
-did = {path = "../../../pallets/primitives/did/", default-features = false,  optional = true  }
+did = {path = "../../../pallets/primitives/did/", default-features = false }
 
 # Substrate dependencies
 sp-api = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
