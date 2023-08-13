@@ -6,6 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+use codec::{Decode, Encode, MaxEncodedLen};
 use pallet_grandpa::{
 	fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
 };
@@ -16,9 +17,10 @@ use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, NumberFor, One, Verify,
+		OpaqueKeys,
 	},
 	transaction_validity::{TransactionSource, TransactionValidity},
-	ApplyExtrinsicResult, MultiSignature,
+	ApplyExtrinsicResult, MultiSignature,  RuntimeDebug, 
 };
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
@@ -33,7 +35,7 @@ use frame_support::dispatch::DispatchClass;
 pub use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{
-		AsEnsureOriginWithArg, ConstBool,
+		AsEnsureOriginWithArg, ConstBool, InstanceFilter,
 		ConstU128, ConstU32, ConstU64, ConstU8, KeyOwnerProofSystem, Randomness, StorageInfo,
 	},
 	weights::{
@@ -56,7 +58,7 @@ pub use sp_runtime::{Perbill, Permill};
 pub use pallet_template;
 
 /// An index to a block.
-pub type BlockNumber = u32;
+pub type BlockNumber = u64;
 
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
 pub type Signature = MultiSignature;
@@ -73,6 +75,20 @@ pub type Index = u32;
 
 /// A hash of some data used by the chain.
 pub type Hash = sp_core::H256;
+
+
+use runtime_common::{
+	assets::{AssetDid, PublicCredentialsFilter},
+	authorization::{AuthorizationId, PalletAuthorize},
+	constants::{self},
+	errors::PublicCredentialsApiError,
+	fees::ToAuthor,
+	  DidIdentifier,  
+};
+use kilt_support::traits::ItemFilter;
+use delegation::DelegationAc;
+use frame_system::EnsureRoot;
+
 
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
 /// the specifics of the runtime. They can then be made to be agnostic over specific formats
@@ -157,11 +173,6 @@ parameter_types! {
 
 
 }
-
-
-
-
-
 
 
 
@@ -429,6 +440,388 @@ impl pallet_contracts::Config for Runtime {
 
 
 
+parameter_types! {
+	pub const Period: u64 = 0xFFFF_FFFF_FFFF_FFFF;
+	pub const Offset: u64 = 0xFFFF_FFFF_FFFF_FFFF;
+}
+
+impl pallet_session::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type ValidatorId = AccountId;
+	type ValidatorIdOf = ();
+	type ShouldEndSession = pallet_session::PeriodicSessions<Period, Offset>;
+	type NextSessionRotation = ();
+	type SessionManager = ();
+	type SessionHandler = <opaque::SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
+	type Keys = opaque::SessionKeys;
+	type WeightInfo = ();
+}
+
+parameter_types! {
+	pub const UncleGenerations: u32 = 0;
+}
+
+impl pallet_authorship::Config for Runtime {
+	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Aura>;
+	type UncleGenerations = UncleGenerations;
+	type FilterUncle = ();
+	type EventHandler = ();
+}
+
+
+impl pallet_utility::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+	type PalletsOrigin = OriginCaller;
+	type WeightInfo = ();
+}
+
+impl pallet_indices::Config for Runtime {
+	type AccountIndex = Index;
+	type Currency = Balances;
+	type Deposit = constants::IndicesDeposit;
+	type RuntimeEvent = RuntimeEvent;
+	type WeightInfo = ();
+}
+
+
+parameter_types! {
+	pub const Fee: Balance = 500;
+}
+
+impl ctype::Config for Runtime {
+	type Currency = Balances;
+	type Fee = Fee;
+	type FeeCollector = runtime_common::fees::ToAuthor<Runtime>;
+
+	type CtypeCreatorId = DidIdentifier;
+	type EnsureOrigin = did::EnsureDidOrigin<DidIdentifier, AccountId>;
+	type OriginSuccess = did::DidRawOrigin<AccountId, DidIdentifier>;
+	type OverarchingOrigin = EnsureRoot<AccountId>;
+	type RuntimeEvent = RuntimeEvent;
+	type WeightInfo = ();
+}
+
+parameter_types! {
+	pub const MaxNewKeyAgreementKeys: u32 = constants::did::MAX_KEY_AGREEMENT_KEYS;
+	#[derive(Debug, Clone, Eq, PartialEq)]
+	pub const MaxUrlLength: u32 = constants::did::MAX_URL_LENGTH;
+	pub const MaxPublicKeysPerDid: u32 = constants::did::MAX_PUBLIC_KEYS_PER_DID;
+	#[derive(Debug, Clone, Eq, PartialEq)]
+	pub const MaxTotalKeyAgreementKeys: u32 = constants::did::MAX_TOTAL_KEY_AGREEMENT_KEYS;
+	#[derive(Debug, Clone, Eq, PartialEq)]
+	pub const MaxEndpointUrlsCount: u32 = constants::did::MAX_ENDPOINT_URLS_COUNT;
+	// Standalone block time is half the duration of a parachain block.
+	pub const MaxBlocksTxValidity: BlockNumber = constants::did::MAX_BLOCKS_TX_VALIDITY * 2;
+	pub const DidDeposit: Balance = constants::did::DID_DEPOSIT;
+	pub const DidFee: Balance = constants::did::DID_FEE;
+	pub const MaxNumberOfServicesPerDid: u32 = constants::did::MAX_NUMBER_OF_SERVICES_PER_DID;
+	pub const MaxServiceIdLength: u32 = constants::did::MAX_SERVICE_ID_LENGTH;
+	pub const MaxServiceTypeLength: u32 = constants::did::MAX_SERVICE_TYPE_LENGTH;
+	pub const MaxServiceUrlLength: u32 = constants::did::MAX_SERVICE_URL_LENGTH;
+	pub const MaxNumberOfTypesPerService: u32 = constants::did::MAX_NUMBER_OF_TYPES_PER_SERVICE;
+	pub const MaxNumberOfUrlsPerService: u32 = constants::did::MAX_NUMBER_OF_URLS_PER_SERVICE;
+}
+
+impl did::Config for Runtime {
+	type DidIdentifier = DidIdentifier;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+	type RuntimeOrigin = RuntimeOrigin;
+	type Currency = Balances;
+	type Deposit = DidDeposit;
+	type Fee = DidFee;
+	type FeeCollector = ToAuthor<Runtime>;
+
+	#[cfg(not(feature = "runtime-benchmarks"))]
+	type EnsureOrigin = did::EnsureDidOrigin<Self::DidIdentifier, AccountId>;
+	#[cfg(not(feature = "runtime-benchmarks"))]
+	type OriginSuccess = did::DidRawOrigin<AccountId, Self::DidIdentifier>;
+
+	#[cfg(feature = "runtime-benchmarks")]
+	type EnsureOrigin = EnsureSigned<Self::DidIdentifier>;
+	#[cfg(feature = "runtime-benchmarks")]
+	type OriginSuccess = Self::DidIdentifier;
+
+	type MaxNewKeyAgreementKeys = MaxNewKeyAgreementKeys;
+	type MaxTotalKeyAgreementKeys = MaxTotalKeyAgreementKeys;
+	type MaxPublicKeysPerDid = MaxPublicKeysPerDid;
+	type MaxBlocksTxValidity = MaxBlocksTxValidity;
+	type MaxNumberOfServicesPerDid = MaxNumberOfServicesPerDid;
+	type MaxServiceIdLength = MaxServiceIdLength;
+	type MaxServiceTypeLength = MaxServiceTypeLength;
+	type MaxServiceUrlLength = MaxServiceUrlLength;
+	type MaxNumberOfTypesPerService = MaxNumberOfTypesPerService;
+	type MaxNumberOfUrlsPerService = MaxNumberOfUrlsPerService;
+	type WeightInfo = ();
+}
+impl pallet_did_lookup::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Signature = Signature;
+	type Signer = <Signature as Verify>::Signer;
+	type DidIdentifier = DidIdentifier;
+
+	type Currency = Balances;
+	type Deposit = constants::did_lookup::DidLookupDeposit;
+
+	type EnsureOrigin = did::EnsureDidOrigin<DidIdentifier, AccountId>;
+	type OriginSuccess = did::DidRawOrigin<AccountId, DidIdentifier>;
+
+	type WeightInfo = ();
+}
+
+impl pallet_web3_names::Config for Runtime {
+	type BanOrigin = EnsureRoot<AccountId>;
+	type OwnerOrigin = did::EnsureDidOrigin<DidIdentifier, AccountId>;
+	type OriginSuccess = did::DidRawOrigin<AccountId, DidIdentifier>;
+	type Currency = Balances;
+	type Deposit = constants::web3_names::Web3NameDeposit;
+	type RuntimeEvent = RuntimeEvent;
+	type MaxNameLength = constants::web3_names::MaxNameLength;
+	type MinNameLength = constants::web3_names::MinNameLength;
+	type Web3Name = pallet_web3_names::web3_name::AsciiWeb3Name<Runtime>;
+	type Web3NameOwner = DidIdentifier;
+	type WeightInfo = ();
+}
+
+
+
+
+parameter_types! {
+	pub const MaxDelegatedAttestations: u32 = 1000;
+	pub const AttestationDeposit: Balance = constants::attestation::ATTESTATION_DEPOSIT;
+}
+
+impl attestation::Config for Runtime {
+	type EnsureOrigin = did::EnsureDidOrigin<DidIdentifier, AccountId>;
+	type OriginSuccess = did::DidRawOrigin<DidIdentifier, AccountId>;
+	type RuntimeEvent = RuntimeEvent;
+	type WeightInfo = ();
+	type Currency = Balances;
+	type Deposit = AttestationDeposit;
+	type MaxDelegatedAttestations = MaxDelegatedAttestations;
+	type AttesterId = DidIdentifier;
+	type AuthorizationId = AuthorizationId<<Runtime as delegation::Config>::DelegationNodeId>;
+	type AccessControl = PalletAuthorize<DelegationAc<Runtime>>;
+}
+
+parameter_types! {
+	pub const MaxSignatureByteLength: u16 = constants::delegation::MAX_SIGNATURE_BYTE_LENGTH;
+	pub const MaxParentChecks: u32 = constants::delegation::MAX_PARENT_CHECKS;
+	pub const MaxRevocations: u32 = constants::delegation::MAX_REVOCATIONS;
+	pub const MaxRemovals: u32 = constants::delegation::MAX_REMOVALS;
+	#[derive(Clone)]
+	pub const MaxChildren: u32 = constants::delegation::MAX_CHILDREN;
+	pub const DelegationDeposit: Balance = constants::delegation::DELEGATION_DEPOSIT;
+}
+
+impl delegation::Config for Runtime {
+	#[cfg(not(feature = "runtime-benchmarks"))]
+	type Signature = did::DidSignature;
+	#[cfg(not(feature = "runtime-benchmarks"))]
+	type DelegationSignatureVerification = did::DidSignatureVerify<Self>;
+
+	#[cfg(feature = "runtime-benchmarks")]
+	type Signature = runtime_common::benchmarks::DummySignature;
+	#[cfg(feature = "runtime-benchmarks")]
+	type DelegationSignatureVerification = kilt_support::signature::AlwaysVerify<AccountId, Vec<u8>, Self::Signature>;
+
+	type DelegationEntityId = DidIdentifier;
+	type DelegationNodeId = Hash;
+	type EnsureOrigin = did::EnsureDidOrigin<DidIdentifier, AccountId>;
+	type OriginSuccess = did::DidRawOrigin<AccountId, DidIdentifier>;
+	type RuntimeEvent = RuntimeEvent;
+	type MaxSignatureByteLength = MaxSignatureByteLength;
+	type MaxParentChecks = MaxParentChecks;
+	type MaxRevocations = MaxRevocations;
+	type MaxRemovals = MaxRemovals;
+	type MaxChildren = MaxChildren;
+	type WeightInfo = ();
+	type Currency = Balances;
+	type Deposit = DelegationDeposit;
+}
+
+impl public_credentials::Config for Runtime {
+	type AccessControl = PalletAuthorize<DelegationAc<Runtime>>;
+	type AttesterId = DidIdentifier;
+	type AuthorizationId = AuthorizationId<<Runtime as delegation::Config>::DelegationNodeId>;
+	type CredentialId = Hash;
+	type CredentialHash = BlakeTwo256;
+	type Currency = Balances;
+	type Deposit = runtime_common::constants::public_credentials::Deposit;
+	type EnsureOrigin = did::EnsureDidOrigin<DidIdentifier, AccountId>;
+	type MaxEncodedClaimsLength = runtime_common::constants::public_credentials::MaxEncodedClaimsLength;
+	type MaxSubjectIdLength = runtime_common::constants::public_credentials::MaxSubjectIdLength;
+	type OriginSuccess = did::DidRawOrigin<AccountId, DidIdentifier>;
+	type RuntimeEvent = RuntimeEvent;
+	type SubjectId = runtime_common::assets::AssetDid;
+	type WeightInfo = ();
+}
+
+/// The type used to represent the kinds of proxying allowed.
+#[derive(
+	Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, RuntimeDebug, MaxEncodedLen, scale_info::TypeInfo,
+)]
+pub enum ProxyType {
+	/// Allow for any call.
+	Any,
+	/// Allow for calls that do not move tokens out of the caller's account.
+	NonTransfer,
+	/// Allow for staking-related calls.
+	CancelProxy,
+	/// Allow for calls that do not result in a deposit being claimed (e.g., for
+	/// attestations, delegations, or DIDs).
+	NonDepositClaiming,
+}
+
+impl Default for ProxyType {
+	fn default() -> Self {
+		Self::Any
+	}
+}
+
+impl InstanceFilter<RuntimeCall> for ProxyType {
+	fn filter(&self, c: &RuntimeCall) -> bool {
+		match self {
+			ProxyType::Any => true,
+			ProxyType::NonTransfer => matches!(
+				c,
+				RuntimeCall::Attestation(..)
+					| RuntimeCall::Authorship(..)
+					// Excludes `Balances`
+					| RuntimeCall::Ctype(..)
+					| RuntimeCall::Delegation(..)
+					| RuntimeCall::Did(..)
+					| RuntimeCall::DidLookup(..)
+					| RuntimeCall::Indices(
+						// Excludes `force_transfer`, and `transfer`
+						pallet_indices::Call::claim { .. }
+							| pallet_indices::Call::free { .. }
+							| pallet_indices::Call::freeze { .. }
+					)
+					| RuntimeCall::Proxy(..)
+					| RuntimeCall::PublicCredentials(..)
+					| RuntimeCall::Session(..)
+					// Excludes `Sudo`
+					| RuntimeCall::System(..)
+					| RuntimeCall::Timestamp(..)
+					| RuntimeCall::Utility(..)
+					| RuntimeCall::Web3Names(..),
+			),
+			ProxyType::NonDepositClaiming => matches!(
+				c,
+				RuntimeCall::Attestation(
+						// Excludes `reclaim_deposit`
+						attestation::Call::add { .. }
+							| attestation::Call::remove { .. }
+							| attestation::Call::revoke { .. }
+							| attestation::Call::change_deposit_owner { .. }
+							| attestation::Call::update_deposit { .. }
+					)
+					| RuntimeCall::Authorship(..)
+					// Excludes `Balances`
+					| RuntimeCall::Ctype(..)
+					| RuntimeCall::Delegation(
+						// Excludes `reclaim_deposit`
+						delegation::Call::add_delegation { .. }
+							| delegation::Call::create_hierarchy { .. }
+							| delegation::Call::remove_delegation { .. }
+							| delegation::Call::revoke_delegation { .. }
+							| delegation::Call::update_deposit { .. }
+							| delegation::Call::change_deposit_owner { .. }
+					)
+					| RuntimeCall::Did(
+						// Excludes `reclaim_deposit`
+						did::Call::add_key_agreement_key { .. }
+							| did::Call::add_service_endpoint { .. }
+							| did::Call::create { .. }
+							| did::Call::delete { .. }
+							| did::Call::remove_attestation_key { .. }
+							| did::Call::remove_delegation_key { .. }
+							| did::Call::remove_key_agreement_key { .. }
+							| did::Call::remove_service_endpoint { .. }
+							| did::Call::set_attestation_key { .. }
+							| did::Call::set_authentication_key { .. }
+							| did::Call::set_delegation_key { .. }
+							| did::Call::submit_did_call { .. }
+							| did::Call::update_deposit { .. }
+							| did::Call::change_deposit_owner { .. }
+					)
+					| RuntimeCall::DidLookup(
+						// Excludes `reclaim_deposit`
+						pallet_did_lookup::Call::associate_account { .. }
+							| pallet_did_lookup::Call::associate_sender { .. }
+							| pallet_did_lookup::Call::remove_account_association { .. }
+							| pallet_did_lookup::Call::remove_sender_association { .. }
+							| pallet_did_lookup::Call::update_deposit { .. }
+							| pallet_did_lookup::Call::change_deposit_owner { .. }
+					)
+					| RuntimeCall::Indices(..)
+					| RuntimeCall::Proxy(..)
+					| RuntimeCall::PublicCredentials(
+						// Excludes `reclaim_deposit`
+						public_credentials::Call::add { .. }
+						| public_credentials::Call::revoke { .. }
+						| public_credentials::Call::unrevoke { .. }
+						| public_credentials::Call::remove { .. }
+						| public_credentials::Call::update_deposit { .. }
+						| public_credentials::Call::change_deposit_owner { .. }
+					)
+					| RuntimeCall::Session(..)
+					// Excludes `Sudo`
+					| RuntimeCall::System(..)
+					| RuntimeCall::Timestamp(..)
+					| RuntimeCall::Utility(..)
+					| RuntimeCall::Web3Names(
+						// Excludes `ban`, and `reclaim_deposit`
+						pallet_web3_names::Call::claim { .. }
+							| pallet_web3_names::Call::release_by_owner { .. }
+							| pallet_web3_names::Call::unban { .. }
+							| pallet_web3_names::Call::update_deposit { .. }
+							| pallet_web3_names::Call::change_deposit_owner { .. }
+					),
+			),
+			ProxyType::CancelProxy => matches!(c, RuntimeCall::Proxy(pallet_proxy::Call::reject_announcement { .. })),
+		}
+	}
+
+	fn is_superset(&self, o: &Self) -> bool {
+		match (self, o) {
+			(x, y) if x == y => true,
+			// "anything" always contains any subset
+			(ProxyType::Any, _) => true,
+			(_, ProxyType::Any) => false,
+			// reclaiming deposits is part of NonTransfer but not in NonDepositClaiming
+			(ProxyType::NonDepositClaiming, ProxyType::NonTransfer) => false,
+			// everything except NonTransfer and Any is part of NonDepositClaiming
+			(ProxyType::NonDepositClaiming, _) => true,
+			// Transfers are part of NonDepositClaiming but not in NonTransfer
+			(ProxyType::NonTransfer, ProxyType::NonDepositClaiming) => false,
+			// everything except NonDepositClaiming and Any is part of NonTransfer
+			(ProxyType::NonTransfer, _) => true,
+			_ => false,
+		}
+	}
+}
+
+impl pallet_proxy::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+	type Currency = Balances;
+	type ProxyType = ProxyType;
+	type ProxyDepositBase = constants::proxy::ProxyDepositBase;
+	type ProxyDepositFactor = constants::proxy::ProxyDepositFactor;
+	type MaxProxies = constants::proxy::MaxProxies;
+	type MaxPending = constants::proxy::MaxPending;
+	type CallHasher = BlakeTwo256;
+	type AnnouncementDepositBase = constants::proxy::AnnouncementDepositBase;
+	type AnnouncementDepositFactor = constants::proxy::AnnouncementDepositFactor;
+	type WeightInfo = ();
+}
+
+
+
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub struct Runtime
@@ -437,21 +830,95 @@ construct_runtime!(
 		NodeBlock = opaque::Block,
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
-		System: frame_system,
-		RandomnessCollectiveFlip: pallet_randomness_collective_flip,
-		Timestamp: pallet_timestamp,
-		Aura: pallet_aura,
-		Grandpa: pallet_grandpa,
-		Balances: pallet_balances,
-		TransactionPayment: pallet_transaction_payment,
-		Sudo: pallet_sudo,
+
+		System: frame_system = 0,
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip=1,
+		Timestamp: pallet_timestamp = 2,
+		Aura: pallet_aura =3,
+		Grandpa: pallet_grandpa =4,
+		Indices: pallet_indices = 5,
+
+		Balances: pallet_balances=6,
+		TransactionPayment: pallet_transaction_payment =7,
+		Sudo: pallet_sudo =8,
 		// Include the custom logic from the pallet-template in the runtime.
-		TemplateModule: pallet_template,
-		Detrade: pallet_detrade,
-		Contracts: pallet_contracts,
-		Assets: pallet_assets,
+		TemplateModule: pallet_template =40,
+		Detrade: pallet_detrade =9,
+		Contracts: pallet_contracts =10,
+		Assets: pallet_assets =11,
+
+
+
+		Ctype: ctype = 12,
+		Attestation: attestation = 13,
+		Delegation: delegation = 14,
+		Did: did = 15,
+		DidLookup: pallet_did_lookup = 16,
+
+		Session: pallet_session = 17,
+		Authorship: pallet_authorship = 18,
+
+		
+		Utility: pallet_utility = 35,
+		// DELETED CrowdloanContributors: 36,
+
+		Proxy: pallet_proxy::{Pallet, Call, Storage, Event<T>} = 37,
+		Web3Names: pallet_web3_names = 38,
+		PublicCredentials: public_credentials = 39,
+
+
 	}
 );
+
+
+impl did::DeriveDidCallAuthorizationVerificationKeyRelationship for RuntimeCall {
+	fn derive_verification_key_relationship(&self) -> did::DeriveDidCallKeyRelationshipResult {
+		fn single_key_relationship(calls: &[RuntimeCall]) -> did::DeriveDidCallKeyRelationshipResult {
+			let init = calls
+				.get(0)
+				.ok_or(did::RelationshipDeriveError::InvalidCallParameter)?
+				.derive_verification_key_relationship()?;
+			calls
+				.iter()
+				.skip(1)
+				.map(RuntimeCall::derive_verification_key_relationship)
+				.try_fold(init, |acc, next| {
+					if Ok(acc) == next {
+						Ok(acc)
+					} else {
+						Err(did::RelationshipDeriveError::InvalidCallParameter)
+					}
+				})
+		}
+		match self {
+			RuntimeCall::Attestation { .. } => Ok(did::DidVerificationKeyRelationship::AssertionMethod),
+			RuntimeCall::Ctype { .. } => Ok(did::DidVerificationKeyRelationship::AssertionMethod),
+			RuntimeCall::Delegation { .. } => Ok(did::DidVerificationKeyRelationship::CapabilityDelegation),
+			// DID creation is not allowed through the DID proxy.
+			RuntimeCall::Did(did::Call::create { .. }) => Err(did::RelationshipDeriveError::NotCallableByDid),
+			RuntimeCall::Did { .. } => Ok(did::DidVerificationKeyRelationship::Authentication),
+			RuntimeCall::Web3Names { .. } => Ok(did::DidVerificationKeyRelationship::Authentication),
+			RuntimeCall::DidLookup { .. } => Ok(did::DidVerificationKeyRelationship::Authentication),
+			RuntimeCall::PublicCredentials { .. } => Ok(did::DidVerificationKeyRelationship::AssertionMethod),
+			RuntimeCall::Utility(pallet_utility::Call::batch { calls }) => single_key_relationship(&calls[..]),
+			RuntimeCall::Utility(pallet_utility::Call::batch_all { calls }) => single_key_relationship(&calls[..]),
+			RuntimeCall::Utility(pallet_utility::Call::force_batch { calls }) => single_key_relationship(&calls[..]),
+			#[cfg(not(feature = "runtime-benchmarks"))]
+			_ => Err(did::RelationshipDeriveError::NotCallableByDid),
+			// By default, returns the authentication key
+			#[cfg(feature = "runtime-benchmarks")]
+			_ => Ok(did::DidVerificationKeyRelationship::Authentication),
+		}
+	}
+
+	// Always return a System::remark() extrinsic call
+	#[cfg(feature = "runtime-benchmarks")]
+	fn get_call_for_did_call_benchmark() -> Self {
+		RuntimeCall::System(frame_system::Call::remark { remark: vec![] })
+	}
+}
+
+
 
 /// The address format for describing accounts.
 pub type Address = sp_runtime::MultiAddress<AccountId, ()>;
@@ -492,6 +959,17 @@ extern crate frame_benchmarking;
 #[cfg(feature = "runtime-benchmarks")]
 mod benches {
 	define_benchmarks!(
+
+		// KILT
+		[attestation, Attestation]
+		[ctype, Ctype]
+		[delegation, Delegation]
+		[did, Did]
+		[pallet_did_lookup, DidLookup]
+		[pallet_web3_names, Web3Names]
+		[public_credentials, PublicCredentials]
+		// Substrate
+
 		[frame_benchmarking, BaselineBench::<Runtime>]
 		[frame_system, SystemBench::<Runtime>]
 		[pallet_balances, Balances]
@@ -709,6 +1187,114 @@ impl_runtime_apis! {
 			Executive::try_execute_block(block, state_root_check, select).expect("execute-block failed")
 		}
 	}
+	
+	impl kilt_runtime_api_did::Did<
+		Block,
+		DidIdentifier,
+		AccountId,
+		AccountId,
+		Balance,
+		Hash,
+		BlockNumber
+	> for Runtime {
+		fn query_by_web3_name(name: Vec<u8>) -> Option<kilt_runtime_api_did::RawDidLinkedInfo<
+				DidIdentifier,
+				AccountId,
+				Balance,
+				Hash,
+				BlockNumber
+			>
+		> {
+			let name: pallet_web3_names::web3_name::AsciiWeb3Name<Runtime> = name.try_into().ok()?;
+			pallet_web3_names::Owner::<Runtime>::get(&name)
+				.and_then(|owner_info| {
+					did::Did::<Runtime>::get(&owner_info.owner).map(|details| (owner_info, details))
+				})
+				.map(|(owner_info, details)| {
+					let accounts = pallet_did_lookup::ConnectedAccounts::<Runtime>::iter_key_prefix(&owner_info.owner).collect();
+					let service_endpoints = did::ServiceEndpoints::<Runtime>::iter_prefix(&owner_info.owner).map(|e| From::from(e.1)).collect();
+
+					kilt_runtime_api_did::RawDidLinkedInfo{
+						identifier: owner_info.owner,
+						w3n: Some(name.into()),
+						accounts,
+						service_endpoints,
+						details: details.into(),
+					}
+			})
+		}
+
+		fn query_by_account(account: AccountId) -> Option<
+			kilt_runtime_api_did::RawDidLinkedInfo<
+				DidIdentifier,
+				AccountId,
+				Balance,
+				Hash,
+				BlockNumber
+			>
+		> {
+			pallet_did_lookup::ConnectedDids::<Runtime>::get(account)
+				.and_then(|owner_info| {
+					did::Did::<Runtime>::get(&owner_info.did).map(|details| (owner_info, details))
+				})
+				.map(|(connection_record, details)| {
+					let w3n = pallet_web3_names::Names::<Runtime>::get(&connection_record.did).map(Into::into);
+					let accounts = pallet_did_lookup::ConnectedAccounts::<Runtime>::iter_key_prefix(&connection_record.did).collect();
+					let service_endpoints = did::ServiceEndpoints::<Runtime>::iter_prefix(&connection_record.did).map(|e| From::from(e.1)).collect();
+
+					kilt_runtime_api_did::RawDidLinkedInfo {
+						identifier: connection_record.did,
+						w3n,
+						accounts,
+						service_endpoints,
+						details: details.into(),
+					}
+				})
+		}
+
+		fn query(did: DidIdentifier) -> Option<
+			kilt_runtime_api_did::RawDidLinkedInfo<
+				DidIdentifier,
+				AccountId,
+				Balance,
+				Hash,
+				BlockNumber
+			>
+		> {
+			let details = did::Did::<Runtime>::get(&did)?;
+			let w3n = pallet_web3_names::Names::<Runtime>::get(&did).map(Into::into);
+			let accounts = pallet_did_lookup::ConnectedAccounts::<Runtime>::iter_key_prefix(&did).collect();
+			let service_endpoints = did::ServiceEndpoints::<Runtime>::iter_prefix(&did).map(|e| From::from(e.1)).collect();
+
+			Some(kilt_runtime_api_did::RawDidLinkedInfo {
+				identifier: did,
+				w3n,
+				accounts,
+				service_endpoints,
+				details: details.into(),
+			})
+		}
+	}
+
+	impl kilt_runtime_api_public_credentials::PublicCredentials<Block, Vec<u8>, Hash, public_credentials::CredentialEntry<Hash, DidIdentifier, BlockNumber, AccountId, Balance, AuthorizationId<<Runtime as delegation::Config>::DelegationNodeId>>, PublicCredentialsFilter<Hash, AccountId>, PublicCredentialsApiError> for Runtime {
+		fn get_by_id(credential_id: Hash) -> Option<public_credentials::CredentialEntry<Hash, DidIdentifier, BlockNumber, AccountId, Balance, AuthorizationId<<Runtime as delegation::Config>::DelegationNodeId>>> {
+			let subject = public_credentials::CredentialSubjects::<Runtime>::get(credential_id)?;
+			public_credentials::Credentials::<Runtime>::get(subject, credential_id)
+		}
+
+		fn get_by_subject(subject: Vec<u8>, filter: Option<PublicCredentialsFilter<Hash, AccountId>>) -> Result<Vec<(Hash, public_credentials::CredentialEntry<Hash, DidIdentifier, BlockNumber, AccountId, Balance, AuthorizationId<<Runtime as delegation::Config>::DelegationNodeId>>)>, PublicCredentialsApiError> {
+			let asset_did = AssetDid::try_from(subject).map_err(|_| PublicCredentialsApiError::InvalidSubjectId)?;
+			let credentials_prefix = public_credentials::Credentials::<Runtime>::iter_prefix(asset_did);
+			if let Some(filter) = filter {
+				Ok(credentials_prefix.filter(|(_, entry)| filter.should_include(entry)).collect())
+			} else {
+				Ok(credentials_prefix.collect())
+			}
+		}
+	}
+
+
+
 }
 
 #[cfg(test)]

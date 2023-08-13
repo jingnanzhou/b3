@@ -18,13 +18,13 @@
 
 use super::*;
 
+use codec::Encode;
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, Zero};
 use frame_support::{
 	assert_ok,
 	traits::{Currency, ReservableCurrency},
 };
 use frame_system::RawOrigin;
-use parity_scale_codec::Encode;
 use sp_core::{crypto::KeyTypeId, ecdsa, ed25519, sr25519};
 use sp_io::crypto::{ecdsa_generate, ecdsa_sign, ed25519_generate, ed25519_sign, sr25519_generate, sr25519_sign};
 use sp_runtime::{traits::IdentifyAccount, AccountId32, MultiSigner};
@@ -90,9 +90,9 @@ fn get_ecdsa_public_delegation_key() -> ecdsa::Public {
 
 fn make_free_for_did<T: Config>(account: &AccountIdOf<T>) {
 	let balance = <CurrencyOf<T> as Currency<AccountIdOf<T>>>::minimum_balance()
-		+ <T as Config>::BaseDeposit::get()
-		+ <T as Config>::BaseDeposit::get()
-		+ <T as Config>::BaseDeposit::get()
+		+ <T as Config>::Deposit::get()
+		+ <T as Config>::Deposit::get()
+		+ <T as Config>::Deposit::get()
 		+ <T as Config>::Fee::get();
 	<CurrencyOf<T> as Currency<AccountIdOf<T>>>::make_free_balance_be(account, balance);
 }
@@ -338,7 +338,7 @@ benchmarks! {
 		let did_public_auth_key = get_ed25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(did_public_auth_key).into_account().into();
 
-		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key), None);
+		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key));
 		let service_endpoints = get_service_endpoints::<T>(
 			c,
 			T::MaxServiceIdLength::get(),
@@ -371,7 +371,7 @@ benchmarks! {
 		let did_public_auth_key = get_ed25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(did_public_auth_key).into_account().into();
 
-		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key), None);
+		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key));
 		let service_endpoints = get_service_endpoints::<T>(
 			c,
 			T::MaxServiceIdLength::get(),
@@ -406,7 +406,7 @@ benchmarks! {
 		let did_public_auth_key = get_ed25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(did_public_auth_key).into_account().into();
 
-		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key), None);
+		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key));
 		Did::<T>::insert(&did_subject, did_details);
 
 		let did_call_op = generate_base_did_call_operation::<T>(did_subject, submitter.clone());
@@ -422,7 +422,7 @@ benchmarks! {
 		let did_public_auth_key = get_sr25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(did_public_auth_key).into_account().into();
 
-		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key), None);
+		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key));
 		Did::<T>::insert(&did_subject, did_details);
 
 		let did_call_op = generate_base_did_call_operation::<T>(did_subject, submitter.clone());
@@ -438,7 +438,7 @@ benchmarks! {
 		let did_public_auth_key = get_ecdsa_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(did_public_auth_key).into_account().into();
 
-		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key), None);
+		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key));
 		Did::<T>::insert(&did_subject, did_details);
 
 		let did_call_op = generate_base_did_call_operation::<T>(did_subject, submitter.clone());
@@ -453,11 +453,9 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let old_did_public_auth_key = get_ed25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(old_did_public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(old_did_public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(old_did_public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(old_did_public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ed25519_public_attestation_key()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ed25519_public_delegation_key()), block_number));
@@ -477,11 +475,9 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let old_did_public_auth_key = get_sr25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(old_did_public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(old_did_public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(old_did_public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(old_did_public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_sr25519_public_attestation_key()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_sr25519_public_delegation_key()), block_number));
@@ -501,11 +497,9 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let old_did_public_auth_key = get_ecdsa_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(old_did_public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(old_did_public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(old_did_public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(old_did_public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ecdsa_public_attestation_key()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ecdsa_public_delegation_key()), block_number));
@@ -526,13 +520,11 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ed25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_delegation_key = get_ed25519_public_delegation_key();
 		let new_delegation_key = DidVerificationKey::from(ed25519_generate(UNUSED_KEY_ID, None));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ed25519_public_attestation_key()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(old_delegation_key), block_number));
@@ -551,12 +543,10 @@ benchmarks! {
 		let public_auth_key = get_sr25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
 		let old_delegation_key = get_sr25519_public_delegation_key();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let new_delegation_key = DidVerificationKey::from(sr25519_generate(UNUSED_KEY_ID, None));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_sr25519_public_attestation_key()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(old_delegation_key), block_number));
@@ -574,14 +564,11 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ecdsa_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_delegation_key = get_ecdsa_public_delegation_key();
 		let new_delegation_key = DidVerificationKey::from(ecdsa_generate(UNUSED_KEY_ID, None));
 
-
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ecdsa_public_attestation_key()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(old_delegation_key), block_number));
@@ -600,12 +587,10 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ed25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_delegation_key = get_ed25519_public_delegation_key();
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ed25519_public_attestation_key()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(old_delegation_key), block_number));
@@ -624,12 +609,10 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_sr25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_delegation_key = get_sr25519_public_delegation_key();
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_sr25519_public_attestation_key()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(old_delegation_key), block_number));
@@ -648,12 +631,10 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ecdsa_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_delegation_key = get_ecdsa_public_delegation_key();
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ecdsa_public_attestation_key()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(old_delegation_key), block_number));
@@ -673,13 +654,11 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ed25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_attestation_key = get_ed25519_public_attestation_key();
 		let new_attestation_key = DidVerificationKey::from(ed25519_generate(UNUSED_KEY_ID, None));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ed25519_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(old_attestation_key), block_number));
@@ -697,13 +676,11 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_sr25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_attestation_key = get_sr25519_public_attestation_key();
 		let new_attestation_key = DidVerificationKey::from(sr25519_generate(UNUSED_KEY_ID, None));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_sr25519_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(old_attestation_key), block_number));
@@ -721,13 +698,11 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ecdsa_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_attestation_key = get_ecdsa_public_attestation_key();
 		let new_attestation_key = DidVerificationKey::from(ecdsa_generate(UNUSED_KEY_ID, None));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ecdsa_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(old_attestation_key), block_number));
@@ -746,12 +721,10 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ed25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_attestation_key = get_ed25519_public_attestation_key();
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ed25519_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(old_attestation_key), block_number));
@@ -770,12 +743,10 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_sr25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_attestation_key = get_sr25519_public_attestation_key();
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_sr25519_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(old_attestation_key), block_number));
@@ -794,12 +765,10 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ecdsa_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let old_attestation_key = get_ecdsa_public_attestation_key();
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get()), block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ecdsa_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(old_attestation_key), block_number));
@@ -819,8 +788,6 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ed25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let mut key_agreement_keys = get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get());
 
 		// remove first entry
@@ -828,7 +795,7 @@ benchmarks! {
 		assert!(key_agreement_keys.remove(&new_key_agreement_key));
 
 		// fill up public keys to its max minus one size (due to removal of new key_agreement_key)
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(key_agreement_keys, block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ed25519_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ed25519_public_attestation_key()), block_number));
@@ -846,15 +813,13 @@ benchmarks! {
 		let public_auth_key = get_sr25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
 		let mut key_agreement_keys = get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get());
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 
 		// remove first entry
 		let new_key_agreement_key = *key_agreement_keys.clone().into_inner().iter().next().unwrap();
 		assert!(key_agreement_keys.remove(&new_key_agreement_key));
 
 		// fill up public keys to its max minus one size (due to removal of new key_agreement_key)
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(key_agreement_keys, block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_sr25519_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_sr25519_public_attestation_key()), block_number));
@@ -871,8 +836,6 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ecdsa_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let mut key_agreement_keys = get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get());
 
 		// remove first entry
@@ -880,7 +843,7 @@ benchmarks! {
 		assert!(key_agreement_keys.remove(&new_key_agreement_key));
 
 		// fill up public keys to its max minus one size (due to removal of new key_agreement_key)
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(key_agreement_keys, block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ecdsa_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ecdsa_public_attestation_key()), block_number));
@@ -898,8 +861,6 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ed25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let key_agreement_keys = get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get());
 
 		// get first entry
@@ -907,7 +868,7 @@ benchmarks! {
 		let key_agreement_key_id = utils::calculate_key_id::<T>(&DidPublicKey::from(key_agreement_key));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(key_agreement_keys, block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ed25519_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ed25519_public_attestation_key()), block_number));
@@ -923,8 +884,6 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_sr25519_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let key_agreement_keys = get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get());
 
 		// get first entry
@@ -932,7 +891,7 @@ benchmarks! {
 		let key_agreement_key_id = utils::calculate_key_id::<T>(&DidPublicKey::from(key_agreement_key));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(key_agreement_keys, block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_sr25519_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_sr25519_public_attestation_key()), block_number));
@@ -948,8 +907,6 @@ benchmarks! {
 		let block_number = T::BlockNumber::zero();
 		let public_auth_key = get_ecdsa_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		let key_agreement_keys = get_key_agreement_keys::<T>(T::MaxNewKeyAgreementKeys::get());
 
 		// get first entry
@@ -957,7 +914,7 @@ benchmarks! {
 		let key_agreement_key_id = utils::calculate_key_id::<T>(&DidPublicKey::from(key_agreement_key));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(key_agreement_keys, block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ecdsa_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ecdsa_public_attestation_key()), block_number));
@@ -972,8 +929,6 @@ benchmarks! {
 	add_service_endpoint {
 		let public_auth_key = get_ecdsa_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		// Max allowed - 1.
 		let old_service_endpoints = get_service_endpoints::<T>(
 			T::MaxNumberOfServicesPerDid::get() - 1,
@@ -995,7 +950,7 @@ benchmarks! {
 		// Changing from the default ID otherwise it would be the same as the one first one in `old_service_endpoints`.
 		new_service_endpoint.id = b"new_id".to_vec().try_into().unwrap();
 
-		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		Did::<T>::insert(&did_subject, did_details);
 		save_service_endpoints(&did_subject, &old_service_endpoints);
 		let origin = RawOrigin::Signed(did_subject.clone());
@@ -1019,8 +974,6 @@ benchmarks! {
 	remove_service_endpoint {
 		let public_auth_key = get_ecdsa_public_authentication_key();
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		let did_account: AccountIdOf<T> = MultiSigner::from(public_auth_key).into_account().into();
-		make_free_for_did::<T>(&did_account);
 		// All set to max.
 		let old_service_endpoints = get_service_endpoints::<T>(
 			T::MaxNumberOfServicesPerDid::get(),
@@ -1032,7 +985,7 @@ benchmarks! {
 		);
 		let endpoint_id = old_service_endpoints[0].id.clone();
 
-		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), Some(did_account));
+		let did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		Did::<T>::insert(&did_subject, did_details);
 		save_service_endpoints(&did_subject, &old_service_endpoints);
 		let origin = RawOrigin::Signed(did_subject.clone());
@@ -1067,7 +1020,7 @@ benchmarks! {
 		let key_agreement_key_id = utils::calculate_key_id::<T>(&DidPublicKey::from(key_agreement_key));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), None);
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(key_agreement_keys, block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ecdsa_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ecdsa_public_attestation_key()), block_number));
@@ -1094,7 +1047,7 @@ benchmarks! {
 		let key_agreement_key_id = utils::calculate_key_id::<T>(&DidPublicKey::from(key_agreement_key));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), None);
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(key_agreement_keys, block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ecdsa_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ecdsa_public_attestation_key()), block_number));
@@ -1121,7 +1074,7 @@ benchmarks! {
 		let key_agreement_key_id = utils::calculate_key_id::<T>(&DidPublicKey::from(key_agreement_key));
 
 		// fill up public keys to its max size because max public keys = # of max key agreement keys + 3
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key), None);
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(public_auth_key));
 		assert_ok!(did_details.add_key_agreement_keys(key_agreement_keys, block_number));
 		assert_ok!(did_details.update_delegation_key(DidVerificationKey::from(get_ecdsa_public_delegation_key()), block_number));
 		assert_ok!(did_details.update_attestation_key(DidVerificationKey::from(get_ecdsa_public_attestation_key()), block_number));
@@ -1139,8 +1092,8 @@ benchmarks! {
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(did_public_auth_key).into_account().into();
 		let did_account: AccountIdOf<T> = MultiSigner::from(did_public_auth_key).into_account().into();
 
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key), None);
-		did_details.deposit.amount = <T as Config>::BaseDeposit::get();
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key));
+		did_details.deposit.amount = <T as Config>::Deposit::get();
 		did_details.deposit.owner = did_account.clone();
 
 		make_free_for_did::<T>(&did_account);
@@ -1154,7 +1107,7 @@ benchmarks! {
 			Did::<T>::get(&did_subject).expect("DID entry should be retained").deposit,
 			Deposit {
 				owner: did_account,
-				amount: <T as Config>::BaseDeposit::get()
+				amount: <T as Config>::Deposit::get()
 			},
 		)
 	}
@@ -1164,8 +1117,8 @@ benchmarks! {
 		let did_subject: DidIdentifierOf<T> = MultiSigner::from(did_public_auth_key).into_account().into();
 		let did_account: AccountIdOf<T> = MultiSigner::from(did_public_auth_key).into_account().into();
 
-		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key), None);
-		did_details.deposit.amount = <T as Config>::BaseDeposit::get() + <T as Config>::BaseDeposit::get();
+		let mut did_details = generate_base_did_details::<T>(DidVerificationKey::from(did_public_auth_key));
+		did_details.deposit.amount = <T as Config>::Deposit::get() + <T as Config>::Deposit::get();
 		did_details.deposit.owner = did_account.clone();
 
 		Did::<T>::insert(&did_subject, did_details.clone());
@@ -1180,7 +1133,7 @@ benchmarks! {
 			Did::<T>::get(&did_subject).expect("DID entry should be retained").deposit,
 			Deposit {
 				owner: did_account,
-				amount: <T as Config>::BaseDeposit::get()
+				amount: <T as Config>::Deposit::get()
 			},
 		)
 	}

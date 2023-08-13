@@ -60,7 +60,6 @@ pallet-assets = { git = "https://github.com/paritytech/substrate", package = "pa
 pallet-assets-chain-extension = { git = "https://github.com/727-Ventures/pallet-assets-chain-extension", default-features = false, features = ["substrate"], branch = "polkadot-v0.9.37"  }
 
 
-
 # Local Dependencies
 pallet-template = { path = "../../../../../pallets/template", default-features = false }
 pallet-detrade = { path = "../../../../../pallets/finance/detrade", default-features = false }
@@ -72,7 +71,13 @@ pallet-detrade = { path = "../../../../../pallets/finance/detrade", default-feat
 pallet-contracts = { git = "https://github.com/paritytech/substrate", package = "pallet-contracts", default-features = false, branch = "polkadot-v0.9.37" }
 pallet-contracts-primitives = { git = "https://github.com/paritytech/substrate", package = "pallet-contracts-primitives", default-features = false, branch = "polkadot-v0.9.37" }
 
+# used by DID
+pallet-session = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
+pallet-authorship = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
 
+pallet-utility = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
+pallet-proxy = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
+pallet-indices = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
 
 
 # did pallets 
@@ -101,6 +106,11 @@ substrate-wasm-builder = { version = "5.0.0-dev", git = "https://github.com/pari
 
 [features]
 default = ["std"]
+
+
+
+
+
 std = [
 	
  "frame-benchmarking?/std",
@@ -120,9 +130,13 @@ std = [
   "public-credentials/std",
   "runtime-common/std",
 
-
-
-
+  "codec/std",
+   "pallet-authorship/std",
+  "pallet-indices/std",
+  "pallet-proxy/std",
+  "pallet-session/std",
+  "pallet-utility/std",
+ 
 
 	"frame-try-runtime?/std",
 	"frame-system-benchmarking?/std",
@@ -160,19 +174,21 @@ std = [
 
 
 ]
+
+
 runtime-benchmarks = [
-
- # "attestation/runtime-benchmarks",
- # "ctype/runtime-benchmarks",
- # "delegation/runtime-benchmarks",
- # "did/runtime-benchmarks",
- # "runtime-common/runtime-benchmarks",
- # "kilt-support/runtime-benchmarks",
- # "pallet-did-lookup/runtime-benchmarks",
- # "pallet-web3-names/runtime-benchmarks",
- # "public-credentials/runtime-benchmarks",
-
-
+  "attestation/runtime-benchmarks",
+  "ctype/runtime-benchmarks",
+  "delegation/runtime-benchmarks",
+  "did/runtime-benchmarks",
+  "runtime-common/runtime-benchmarks",
+  "kilt-support/runtime-benchmarks",
+  "pallet-did-lookup/runtime-benchmarks",
+  "pallet-indices/runtime-benchmarks",
+  "pallet-web3-names/runtime-benchmarks",
+  "pallet-proxy/runtime-benchmarks",
+  "pallet-utility/runtime-benchmarks",
+  "public-credentials/runtime-benchmarks",
 
 	"frame-benchmarking/runtime-benchmarks",
 	"frame-support/runtime-benchmarks",
@@ -184,19 +200,22 @@ runtime-benchmarks = [
 	"pallet-timestamp/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
 ]
+
 try-runtime = [
-
- # "attestation/try-runtime",
- # "delegation/try-runtime",
- # "ctype/try-runtime",
- # "did/try-runtime",
- # "kilt-support/try-runtime",
- # "pallet-did-lookup/try-runtime",
- # "pallet-web3-names/try-runtime",
- # "public-credentials/try-runtime",
- # "runtime-common/try-runtime",
-
-
+  "attestation/try-runtime",
+  "delegation/try-runtime",
+  "ctype/try-runtime",
+  "did/try-runtime",
+  "kilt-support/try-runtime",
+  "pallet-authorship/try-runtime",
+  "pallet-did-lookup/try-runtime",
+  "pallet-indices/try-runtime",
+  "pallet-proxy/try-runtime",
+  "pallet-session/try-runtime",
+  "pallet-timestamp/try-runtime",
+  "pallet-web3-names/try-runtime",
+  "pallet-utility/try-runtime",
+  "runtime-common/try-runtime",
 
 	"frame-try-runtime/try-runtime",
 	"frame-executive/try-runtime",
