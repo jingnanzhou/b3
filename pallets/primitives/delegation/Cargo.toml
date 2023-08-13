@@ -1,0 +1,102 @@
+
+[package]
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+name = "delegation"
+description = "Enables creating and revoking root nodes of delegation hierarchies; adding and revoking delegation nodes based on root nodes."
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dev-dependencies]
+
+attestation = {path = "../attestation/", default-features = false, features = ["mock"] }
+ctype = {path = "../ctype/", default-features = false, features = ["mock"] }
+kilt-support = {path = "../../../common/support/", default-features = false, features = ["mock", "try-runtime"] }
+
+# Substrate dependencies
+pallet-balances = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37", features = ["std"]}
+sp-core = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37", features = ["std"]}
+sp-keystore = {git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.37", features = ["std"]}
+
+
+
+
+
+
+[dependencies]
+# Internal dependencies
+
+attestation = {path = "../attestation/", default-features = false }
+ctype = {path = "../ctype/", default-features = false }
+kilt-support = {path = "../../../common/support/", default-features = false }
+public-credentials = {path = "../public-credentials/", default-features = false }
+
+# External dependencies
+parity-scale-codec = {version = "3.1.5", default-features = false, features = ["derive"]}
+log = "0.4.17"
+scale-info = {version = "2.1.1", default-features = false, features = ["derive"]}
+bitflags = {version = "1.3.2", default-features = false}
+
+
+
+
+# Substrate dependencies
+
+frame-benchmarking = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37", optional = true}
+frame-support = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
+frame-system = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
+pallet-balances = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37", optional = true}
+
+
+sp-core = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37", optional = true}
+sp-keystore = {git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.37", optional = true}
+sp-io = {git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.37", optional = true}
+sp-runtime = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
+sp-std = {git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.37"}
+
+
+
+[features]
+default = ["std"]
+mock = [
+  "pallet-balances",
+  "sp-core",
+  "sp-io",
+  "sp-keystore",
+  "kilt-support/mock",
+]
+runtime-benchmarks = [
+  "frame-benchmarking",
+  "frame-support/runtime-benchmarks",
+  "frame-system/runtime-benchmarks",
+  "kilt-support/runtime-benchmarks",
+  "public-credentials/runtime-benchmarks",
+  "sp-core",
+  "sp-io",
+  "sp-runtime/runtime-benchmarks",
+]
+std = [
+  "attestation/std",
+  "parity-scale-codec/std",
+  "ctype/std",
+  "frame-benchmarking?/std",
+  "frame-support/std",
+  "frame-system/std",
+  "kilt-support/std",
+  "log/std",
+  "pallet-balances/std",
+  "public-credentials/std",
+  "scale-info/std",
+  "sp-core/std",
+  "sp-io/std",
+  "sp-runtime/std",
+  "sp-std/std",
+]
+try-runtime = [
+  "frame-support/try-runtime",
+  "frame-system/try-runtime",
+  "kilt-support/try-runtime",
+  "public-credentials/try-runtime",
+]

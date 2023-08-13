@@ -1,3 +1,9 @@
+[profile.release]
+# Polkadot runtime requires unwinding.
+panic = "unwind"
+opt-level = 3
+
+
 [package]
 name = "pallet-repository"
 description = "blockchain building blocks based on Polkadot and the Substrate framework."
@@ -23,48 +29,81 @@ path = "src/main.rs"
 [workspace]
 members = [
 
-    "templates/relay-mvp/node/cli",
-    "templates/relay-mvp/node/client",
-    "templates/relay-mvp/node/service",
+    "common/support",
+    "common/runtime",
 
-    "templates/relay-mvp/chains/westend/runtime",
-    "templates/relay-mvp/chains/westend/chain-spec",
-    "templates/relay-mvp/chains/rococo/runtime",
-    "templates/relay-mvp/chains/rococo/chain-spec",
-    "templates/relay-mvp/chain-selection",
+    "common/assets",
 
+    "common/runtime-api/did",
+    "common/runtime-api/public-credentials",
+    "common/runtime-api/staking",
 
-    "templates/para-mvp/node",
-    "templates/para-mvp/chains/sample/runtime",
-    "templates/para-mvp/chains/sample/chain-spec",
-    "templates/para-mvp/chain-selection",
+    "b3-framework/relay-mvp/node/cli",
+    "b3-framework/relay-mvp/node/client",
+    "b3-framework/relay-mvp/node/service",
 
-
-
-
-    "templates/solo-poc/node",
-    "templates/solo-poc/chains/sample/runtime",
-    "templates/solo-poc/chains/sample/chain-spec",
-    "templates/solo-poc/chain-selection",
+    "b3-framework/relay-mvp/net-defs/westend/runtime",
+    "b3-framework/relay-mvp/net-defs/westend/chain-spec",
+    "b3-framework/relay-mvp/net-defs/rococo/runtime",
+    "b3-framework/relay-mvp/net-defs/rococo/chain-spec",
+    "b3-framework/relay-mvp/net-selection",
 
 
+    "b3-framework/para-mvp/node",
+    "b3-framework/para-mvp/net-defs/sample/runtime",
+    "b3-framework/para-mvp/net-defs/sample/chain-spec",
+    "b3-framework/para-mvp/net-selection",
 
-    "templates/solo-mvp/node/cli",
-    "templates/solo-mvp/node/executor",
-    "templates/solo-mvp/node/inspect",
-    "templates/solo-mvp/node/primitives",
-    "templates/solo-mvp/node/rpc",
-    "templates/solo-mvp/node/testing",
-    "templates/solo-mvp/chains/sample/runtime",
-    "templates/solo-mvp/chains/sample/chain-spec",
-    "templates/solo-mvp/chain-selection",
+
+
+
+    "b3-framework/solo-poc/node",
+    "b3-framework/solo-poc/net-defs/sample/runtime",
+    "b3-framework/solo-poc/net-defs/sample/chain-spec",
+    "b3-framework/solo-poc/net-defs/de-wcf/runtime",
+    "b3-framework/solo-poc/net-defs/de-wcf/chain-spec",
+
+    "b3-framework/solo-poc/net-selection",
+
+
+
+    "b3-framework/solo-mvp/node/cli",
+    "b3-framework/solo-mvp/node/executor",
+    "b3-framework/solo-mvp/node/inspect",
+    "b3-framework/solo-mvp/node/primitives",
+    "b3-framework/solo-mvp/node/rpc",
+    "b3-framework/solo-mvp/node/testing",
+    "b3-framework/solo-mvp/net-defs/sample/runtime",
+    "b3-framework/solo-mvp/net-defs/sample/chain-spec",
+    "b3-framework/solo-mvp/net-selection",
 
 
     "pallets/template",
 
+    "pallets/finance/detrade",
+
+    "pallets/primitives/ctype",
+    "pallets/primitives/attestation",
+    "pallets/primitives/did",
+    "pallets/primitives/pallet-did-lookup",
+
+    "pallets/primitives/public-credentials",
+   "pallets/primitives/delegation",
+   "pallets/primitives/parachain-staking",
+
+    "pallets/primitives/pallet-web3-names",
+
+
+
+    "pallets/primitives/contracts",
+    "pallets/primitives/timestamp",
+    "pallets/primitives/indices",
+    "pallets/primitives/session",
+    "pallets/primitives/session/benchmarking",
+
+
+    "pallets/primitives/authorship",
+    "pallets/primitives/offchain-worker",
+
 ]
-[profile.release]
-# Polkadot runtime requires unwinding.
-panic = "unwind"
-opt-level = 3
 
